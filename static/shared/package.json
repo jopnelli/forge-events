@@ -1,0 +1,6 @@
+{
+  "name": "shared",
+  "version": "0.0.0",
+  "description": "Shared components for frontend modules. Use for re-usable components.",
+  "license": "ISC"
+}

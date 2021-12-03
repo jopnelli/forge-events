@@ -1,0 +1,5 @@
+{
+  "name": "shared-types",
+  "version": "0.0.0",
+  "description": "Contains joi schema and type definitions that might be used in backend and frontend"
+}

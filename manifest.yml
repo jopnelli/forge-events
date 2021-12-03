@@ -1,0 +1,43 @@
+modules:
+  confluence:spaceSettings:
+    - key: a-new-forge-app-confluence-space-settings
+      resource: sps-res
+      resolver:
+        function: resolver
+      title: a-new-forge-app
+  confluence:contentBylineItem:
+    - key: a-new-forge-app-content-byline-item
+      resource: cbi-res
+      resolver:
+        function: resolver
+      title: a-new-forge-app
+      tooltip: Lorem ipsum
+      description: Some description
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: sps-res
+    path: static/spaceSettings/build
+    tunnel:
+      port: 3000
+  - key: cbi-res
+    path: static/contentBylineItem/build
+    tunnel:
+      port: 3001
+  - key: modal-res
+    path: static/modal/build
+    tunnel:
+      port: 3002
+permissions:
+  scopes:
+    - storage:app
+    - read:confluence-user
+  content:
+    styles:
+      - 'unsafe-inline'
+  external:
+    images:
+      - '*.atlassian.net'
+app:
+  id: ari:cloud:ecosystem::app/54694889-3bf5-450b-924c-0db3a94028e4

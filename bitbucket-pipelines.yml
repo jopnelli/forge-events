@@ -1,0 +1,74 @@
+image: node:16
+
+definitions:
+  # prevents node_modules downloads for every build
+  caches:
+      node: node_modules
+      node2: static/node_modules
+  steps:
+    - step: &app-install
+        name: Install
+        caches:
+          - node
+          - node2
+        script:
+          - npm install # not using npm ci to use bitbucket caches
+        artifacts:
+          - node_modules/**
+          - static/node_modules/**
+          - static/**/node_modules/**
+    - parallel: &app-build
+        - step:
+            name: Lint
+            script:
+              - npm run lint
+        - step:
+            name: Test
+            script:
+              - npm run test
+            artifacts:
+              - test-reports/junit.xml
+        - step:
+            name: Build
+            script:
+              - npm run build
+            artifacts:
+              - static/contentBylineItem/build/**
+              - static/spaceSettings/build/**
+              - static/modal/build/**
+pipelines:
+  default:
+    - step: *app-install
+    - parallel: *app-build
+  branches:
+    develop:
+      - step: *app-install
+      - parallel: *app-build
+      - step:
+          name: Forge Deployment
+          deployment: Test
+          script:
+            - node_modules/.bin/forge settings set usage-analytics false
+            - node_modules/.bin/forge login --non-interactive --email ${ATLASSIAN_USER} --token ${ATLASSIAN_PWD}
+            - node_modules/.bin/forge deploy -e development
+    release/*:
+      - step: *app-install
+      - parallel: *app-build
+      - step:
+          name: Forge Deployment
+          deployment: Staging
+          script:
+            - node_modules/.bin/forge settings set usage-analytics false
+            - node_modules/.bin/forge login --non-interactive --email ${ATLASSIAN_USER} --token ${ATLASSIAN_PWD}
+            - node_modules/.bin/forge deploy -e staging
+    master:
+      - step: *app-install
+      - parallel: *app-build
+      - step:
+          name: Forge Deployment
+          deployment: Production
+          trigger: manual
+          script:
+            - node_modules/.bin/forge settings set usage-analytics false
+            - node_modules/.bin/forge login --non-interactive --email ${ATLASSIAN_USER} --token ${ATLASSIAN_PWD}
+            - node_modules/.bin/forge deploy -e production
