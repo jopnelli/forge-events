@@ -34,9 +34,9 @@ export function injectFirestoreAuthentication(app: Application<{}, AppContext>, 
         }
         ctx.authenticatedParentDoc = firestore
             .collection("scoped")
-            .doc(authenticatedFirestoreScope)
+            .doc(authenticatedFirestoreScope) // different app(-environments)
             .collection("tenants")
-            .doc(decodedForgeContext);
+            .doc(decodedForgeContext); // different installation contexts / tenants
         await next();
     });
     return app;
