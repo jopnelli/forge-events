@@ -1,11 +1,20 @@
 import Resolver from '@forge/resolver';
 import {fetch} from "@forge/api";
+import {ForgePageInvocationContext} from "./types";
 
 const resolver = new Resolver();
 
+const getRemoteHostToken = () => process.env.DATABASE_TOKEN || "";
+const getRemoteHostUrl = () => process.env.LOOPHOLE_HOST || "https://language-manager.seibert-media.net";
+
 resolver.define("writeToFirestore", async (req) => {
-    const token = process.env.DATABASE_TOKEN || "";
-    const response = await fetch("https://language-manager.seibert-media.net/", {headers: {"Authorization": token}});
+    const context = req.context as ForgePageInvocationContext;
+    const response = await fetch(getRemoteHostUrl(), {
+        headers: {
+            "Authorization": getRemoteHostToken(),
+        }
+    });
+    console.log(await response.text());
     console.log(response.status);
 })
 

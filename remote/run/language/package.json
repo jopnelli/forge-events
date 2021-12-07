@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/out.js",
     "build": "tsc & node build.js",
-    "serve": "EMULATOR_PROJECT_ID=$(firebase use) nodemon src/app.ts",
+    "serve": "FORGE_USER_VAR_DATABASE_TOKEN=localdev:x EMULATOR_PROJECT_ID=$(firebase use) nodemon src/app.ts",
     "deploy": "gcloud builds submit --project=$(firebase use)"
   },
   "engines": {
