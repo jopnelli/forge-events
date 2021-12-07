@@ -1,13 +1,12 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React from "react";
 import styled from "styled-components";
 import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
 import {useAsyncFn} from "react-use";
 import {invokeWriteToFirestore} from "shared/api";
 
-
 function App() {
-    const [writeToFirestoreState, writeToFirestore] = useAsyncFn(async () => {
+    const [, writeToFirestore] = useAsyncFn(async () => {
         await invokeWriteToFirestore();
     }, []);
 
