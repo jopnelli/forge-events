@@ -37,7 +37,8 @@ permissions:
     styles:
       - 'unsafe-inline'
   external:
-    images:
-      - '*.atlassian.net'
+    fetch:
+      backend:
+        - 'language-manager.seibert-media.net'
 app:
   id: ari:cloud:ecosystem::app/54694889-3bf5-450b-924c-0db3a94028e4

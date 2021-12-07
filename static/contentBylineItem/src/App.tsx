@@ -2,71 +2,32 @@ import React, {useEffect, useMemo, useState} from "react";
 import styled from "styled-components";
 import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
-import {getPageNote, savePageNote} from "shared/note-api";
 import {useAsyncFn} from "react-use";
-import {Note, NoteCreatePayload} from "../../../types/note";
-import {SkeletonItem} from "@atlaskit/menu";
-import {AsyncUser} from "shared/AsyncUser";
+import {invokeWriteToFirestore} from "shared/api";
 
-/**
- * contentBylineItem that renders a note below every pageTitle
- * it fetches the note for the current page and opens a modal to allow editing of the value
- */
+
 function App() {
-    const [fetchingState, fetchNote] = useAsyncFn(async () => {
-        const note = await getPageNote();
-        setPageNote(note);
+    const [writeToFirestoreState, writeToFirestore] = useAsyncFn(async () => {
+        await invokeWriteToFirestore();
     }, []);
-
-    const [savingState, saveNote] = useAsyncFn(async (payload: NoteCreatePayload) => {
-        await savePageNote(payload);
-    }, []);
-
-    const isLoading = useMemo(() => fetchingState.loading || savingState.loading, [fetchingState, savingState]);
-
-    const [pageNote, setPageNote] = useState<Note | null>(null);
-
-    useEffect(() => {
-        fetchNote()
-    }, [fetchNote]);
 
     const openModal = () => {
         const modal = new Modal({
             resource: "modal-res",
-            context: {note: pageNote}, // will be passed to modal
-            async onClose(payload: NoteCreatePayload) {
-                await saveNote(payload);
-                await fetchNote();
-            },
+            context: {}, // will be passed to modal
+            async onClose() {},
         });
         modal.open();
     };
 
-    if (fetchingState.error || savingState.error) {
-        return <span>{fetchingState.error?.message || savingState.error?.message || "Unknown Error"}</span>;
-    }
-
-    if (isLoading || !pageNote) {
-        return <>
-            {[1, 2].map(_ =>
-                <SkeletonItem key={_}
-                              isShimmering
-                              cssFn={css => ({padding: 0, "min-height": "25px", "border-radius": "0"})}/>
-            )}
-        </>
-    }
-
     return (
         <AppWrapper>
             <Headline>
-                Page note
+                Proof of concept
             </Headline>
-            {
-                pageNote.creator && <AsyncUser accountId={pageNote.creator}/>
-            }
-            <Message>{pageNote.msg}</Message>
             <Actions>
-                <Button onClick={openModal} appearance="subtle">Edit</Button>
+                <Button onClick={writeToFirestore} appearance="subtle">Test</Button>
+                <Button onClick={openModal} appearance="subtle">Open modal</Button>
             </Actions>
         </AppWrapper>
     );
@@ -75,9 +36,6 @@ function App() {
 }
 
 const AppWrapper = styled.div``
-const Message = styled.div`
-  font-style: italic;
-`
 const Headline = styled.h1`
   font-size: 12px;
   text-transform: uppercase;

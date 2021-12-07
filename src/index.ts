@@ -1,24 +1,12 @@
 import Resolver from '@forge/resolver';
-import Joi from "joi";
-import {noteCreatePayloadSchema, NoteCreatePayload} from "../types/note";
-import {ForgePageInvocationContext} from "./types";
-import {getPageNote, savePageNote} from "./note-persistence";
+import {fetch} from "@forge/api";
 
 const resolver = new Resolver();
 
-resolver.define("savePageNote", async (req) => {
-    Joi.assert(req.payload, noteCreatePayloadSchema);
-    const context = req.context as ForgePageInvocationContext;
-    const note = req.payload as NoteCreatePayload;
-    await savePageNote({
-        pageId: context.extension.content.id,
-        note: {msg: note.msg, creator: context.accountId},
-    });
-})
-
-resolver.define("getPageNote", async (req) => {
-    const context = req.context as ForgePageInvocationContext;
-    return await getPageNote({pageId: context.extension.content.id}) || {msg: "No message set"};
+resolver.define("writeToFirestore", async (req) => {
+    const token = process.env.DATABASE_TOKEN || "";
+    const response = await fetch("https://language-manager.seibert-media.net/", {headers: {"Authorization": token}});
+    console.log(response.status);
 })
 
 export const handler = resolver.getDefinitions(); // exports backend function
