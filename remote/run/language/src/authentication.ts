@@ -32,12 +32,16 @@ export function injectFirestoreAuthentication(app: Application<{}, AppContext>, 
             ctx.throw(501);
             return;
         }
-        ctx.authenticatedParentDoc = firestore.collection("scoped-data").doc(authenticatedFirestoreScope).collection("tenants").doc(decodedForgeContext);
+        ctx.authenticatedParentDoc = firestore
+            .collection("scoped")
+            .doc(authenticatedFirestoreScope)
+            .collection("tenants")
+            .doc(decodedForgeContext);
         await next();
     });
     return app;
 }
 
 function decodeForgeContext(forgeContext: string) {
-    return new Buffer(forgeContext).toString("base64");
+    return Buffer.from(forgeContext).toString("base64");
 }
