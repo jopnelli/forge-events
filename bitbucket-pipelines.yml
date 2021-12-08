@@ -17,6 +17,7 @@ definitions:
           - node_modules/**
           - static/node_modules/**
           - static/**/node_modules/**
+          - remote/run/language/node_modules/**
     - parallel: &app-build
         - step:
             name: Lint
