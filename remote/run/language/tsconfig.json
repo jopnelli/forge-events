@@ -13,7 +13,8 @@
     "module": "commonjs",
     "strictNullChecks": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "noEmit": true
   }

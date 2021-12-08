@@ -22,12 +22,13 @@ definitions:
             name: Lint
             script:
               - npm run lint
-        - step:
-            name: Test
-            script:
-              - npm run test
-            artifacts:
-              - test-reports/junit.xml
+# TODO: enable if compatible with integrated firestore tests
+#        - step:
+#            name: Test
+#            script:
+#              - npm run test
+#           artifacts:
+#             - test-reports/junit.xml
         - step:
             name: Build
             script:

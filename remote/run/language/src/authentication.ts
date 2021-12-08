@@ -2,7 +2,7 @@ import {Firestore} from '@google-cloud/firestore';
 import Application from "koa";
 import {AppContext} from "./app-types";
 
-export function injectFirestoreAuthentication(app: Application<{}, AppContext>, firestore: Firestore): Application<{}, AppContext> {
+export function injectFirestoreAuthentication(app: Application<{}, AppContext>, firestore: Firestore) {
     app.use(async (ctx, next) => {
         const forgeInstallationContextHeader = ctx.request.headers["x-forge-context"];
         const authorizationHeader = ctx.request.headers.authorization;

@@ -1,7 +1,7 @@
 const esbuild = require('esbuild');
 const { nodeExternalsPlugin } = require('esbuild-node-externals');
 esbuild.build({
-    entryPoints: ['src/app.ts'],
+    entryPoints: ['src/index.ts'],
     bundle: true,
     outfile: 'dist/out.js',
     target: "node16",

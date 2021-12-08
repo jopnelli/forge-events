@@ -13,6 +13,7 @@ const commands = [
     "cd remote && firebase emulators:start --only firestore",
     "cd remote/run/language/ && npm run serve ",
 ];
+
 const ttabBin = `${__dirname}/node_modules/ttab/bin/ttab`
 const ttabCmd = `${ttabBin} -d ${__dirname} `
 
