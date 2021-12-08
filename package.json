@@ -44,7 +44,7 @@
     "test:ci": "cd ./remote/run && firebase emulators:exec 'npm run test'",
     "lint": "echo not implemented",
     "forge:tunnel": "node tunnel-check.js; FORGE_USER_VAR_DATABASE_TOKEN=localdev:x forge tunnel",
-    "postinstall": "(cd static && npm install); (cd static/spaceSettings && npm install); (cd static/contentBylineItem && npm install); (cd static/modal && npm install); (cd remote/run && npm install);",
+    "postinstall": "(cd static && npm install); (cd static/spaceSettings && npm install); (cd static/contentBylineItem && npm install); (cd static/modal && npm install); (cd remote/run/language && npm install);",
     "remove-all-node-modules": "(rm -rf ./node_modules); (cd static && rm -rf ./node_modules); (cd static/spaceSettings && rm -rf ./node_modules); (cd static/contentBylineItem && rm -rf ./node_modules);  (cd static/modal && rm -rf ./node_modules); (cd remote/run && rm -rf ./node_modules);"
   }
 }
