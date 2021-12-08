@@ -10,7 +10,7 @@ Download loophole from here https://loophole.site/ and login before usage. Repla
 ### Forge tunnel
 Replace yourdevname to according loophole site again.
 ```shell 
-export FORGE_USER_VAR_LOOPHOLE_HOST="https://yourdevname.loophole.site"
+export FORGE_USER_VAR_LOOPHOLE_HOST="yourdevname"
 npm run forge:tunnel
 ```
 ### React / webpack server(s)
