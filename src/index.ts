@@ -5,7 +5,7 @@ import {ForgePageInvocationContext} from "./types";
 const resolver = new Resolver();
 
 const getRemoteHostToken = () => process.env.DATABASE_TOKEN || "";
-const getRemoteHostUrl = () => process.env.LOOPHOLE_HOST || "https://language-manager.seibert-media.net";
+const getRemoteHostUrl = () => process.env.LOOPHOLE_HOST ? `https://${process.env.LOOPHOLE_HOST}.loophole.site` : "https://language-manager.seibert-media.net";
 
 resolver.define("writeToFirestore", async (req) => {
     const context = req.context as ForgePageInvocationContext;
