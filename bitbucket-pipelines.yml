@@ -26,8 +26,8 @@ definitions:
             name: Test
             script:
               - npm run test:ci
-           artifacts:
-             - test-reports/junit.xml
+            artifacts:
+              - test-reports/junit.xml
         - step:
             name: Build
             script:
