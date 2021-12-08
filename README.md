@@ -29,3 +29,9 @@ firebase emulators:start
 ```
 cd remote/run/language/ && npm run serve 
 ```
+
+#### Auto-start dev mode
+You can automate the processes above by:
+```
+node dev.js --host yourcustomdevmode
+```

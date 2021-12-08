@@ -5,7 +5,7 @@ if (!host) {
     console.error("No hostname specified. You probably want to start this command with sth. like: node dev.js --host yourname");
     return;
 }
-const ports = [3000, 3001, 3002, 4400, 2408, 8010, 8080, 57016];
+const ports = [2408, 3000, 3001, 3002, 4400, 4500, 8010, 8080, 57016];
 const commands = [
     `./loophole http 8080 --hostname ${host.toLowerCase()}`,
     `export FORGE_USER_VAR_LOOPHOLE_HOST="${host.toLowerCase()}" && npm run forge:tunnel`,
