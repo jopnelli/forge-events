@@ -1,6 +1,10 @@
-interface LinkRequestItem {
+export interface LinkRequestItem {
     pageId: number
     languageISO2: string
-    contentType: "page" | "blogpost"
-    spaceKey: string
+}
+
+export interface LanguageLinkInFirestore {
+    linkId: number
+    pageId: number
+    languageISO2: string
 }
