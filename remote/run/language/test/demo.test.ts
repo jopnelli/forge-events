@@ -72,7 +72,6 @@ describe('PUT /', () => {
         expect(response.status).toBe(204);
 
         const languageLinks = await request(app.callback()).get("/page/1");
-        const sort: any = (a: any, b: any) => a.pageId - b.pageId;
-        expect(languageLinks.body.sort(sort)).toEqual(payload.map(p => ({...p, linkId: 1})).sort(sort));
+        expect(languageLinks.body).toEqual(expect.arrayContaining(payload.map(p => ({...p, linkId: 1}))));
     });
 });
