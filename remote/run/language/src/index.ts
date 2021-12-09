@@ -1,6 +1,6 @@
 import {Firestore} from '@google-cloud/firestore';
-import {injectFirestoreAuthentication} from "./authentication";
 import {composeApp} from "./app";
+import {injectFirestoreAuthentication} from "./middleware/authentication";
 
 const emulatorProjectId = process.env.EMULATOR_PROJECT_ID;
 

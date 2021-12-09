@@ -1,9 +1,10 @@
 import {Firestore} from '@google-cloud/firestore';
 import Application from "koa";
-import {AppContext} from "./app-types";
+import {AppContext} from "../app-types";
 
+// TODO: add unit test
 export function injectFirestoreAuthentication(app: Application<{}, AppContext>, firestore: Firestore) {
-    app.use(async (ctx, next) => {
+    app.use(async (ctx: Application.ExtendableContext & { state: {} } & AppContext & { body: any; response: { body: any } }, next) => {
         const forgeInstallationContextHeader = ctx.request.headers["x-forge-context"];
         const authorizationHeader = ctx.request.headers.authorization;
         if (Array.isArray(forgeInstallationContextHeader) || Array.isArray(authorizationHeader)) {
