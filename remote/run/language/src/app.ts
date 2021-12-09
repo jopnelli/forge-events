@@ -1,11 +1,12 @@
-import Koa, {Next} from "koa";
+import Koa from "koa";
+import Application from "koa";
 import Router from '@koa/router';
 import {AppContext} from "./app-types";
-import Application from "koa";
 import koaBody from "koa-body";
 import {linkRequestItemSchemas} from "./schema/linkage";
 import {validate} from "./middleware/validation";
 import {LanguageLinkInFirestore, LinkRequestItem} from "../../../../types/types";
+import {languageLinkPersistence} from "./persistence/linkage";
 
 const router = new Router<{}, AppContext>();
 const LINK_COLLECTION = "links";
@@ -25,14 +26,9 @@ router.get('/test', async ctx => {
 // updateLinking
 router.put("/", validate(linkRequestItemSchemas), async ctx => {
     const linkRequestItems: LinkRequestItem[] = ctx.request.body;
-    const linkId: number = Math.min(...linkRequestItems.map(item => item.pageId));
-    const languageLinks: LanguageLinkInFirestore[] = linkRequestItems.map(item => ({linkId, pageId: item.pageId, languageISO2: item.languageISO2}));
-    const writes = languageLinks.map(link => {
-        return ctx.authenticatedParentDoc.collection(LINK_COLLECTION).doc().create(link);
-    });
-    await Promise.all(writes);
-
-    ctx.body = null;
+    ctx.body = await languageLinkPersistence({
+        authenticatedParentDoc: ctx.authenticatedParentDoc
+    }).updateLinks(linkRequestItems);
 });
 
 // getLanguageLinksByLinkId
@@ -51,8 +47,7 @@ router.get("/page/:pageId", async ctx => {
     }
     const languageLink: LanguageLinkInFirestore = queryResult.docs[0].data() as LanguageLinkInFirestore;
     const linksQueryResult = await ctx.authenticatedParentDoc.collection(LINK_COLLECTION).where("linkId", "==", languageLink.linkId).get();
-    const languageLinks = linksQueryResult.docs.map(doc => doc.data() as LanguageLinkInFirestore);
-    ctx.body = languageLinks;
+    ctx.body = linksQueryResult.docs.map(doc => doc.data() as LanguageLinkInFirestore);
 });
 
 // removeLinkFromPage

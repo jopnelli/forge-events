@@ -5,10 +5,11 @@ export function validate(schema: Joi.Schema) {
     return async (ctx: Application.ExtendableContext, next: Next) => {
         try {
             Joi.assert(ctx.request.body, schema);
-            await next();
         } catch (e: any) {
             ctx.body = Joi.isError(e) ? e.details : "Unknown validation error.";
+            console.warn(e);
             ctx.status = 400;
         }
+        await next();
     }
 }
