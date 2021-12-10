@@ -8,7 +8,7 @@ describe('PUT /', () => {
         const response = await request(app.callback()).put("/").send([
             {pageId: 2, languageISO2: "en"}
         ]);
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(200);
     });
 
     test('accepts valid link requests', async () => {
@@ -17,7 +17,7 @@ describe('PUT /', () => {
             {pageId: 3, languageISO2: "fr"},
             {pageId: 4, languageISO2: "de"}
         ]);
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(200);
     });
 
     test('rejects link requests with duplicate page id', async () => {
@@ -69,7 +69,7 @@ describe('PUT /', () => {
         ];
         const response = await request(app.callback()).put("/").send(payload);
 
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(200);
 
         const languageLinks = await request(app.callback()).get("/page/1");
         expect(languageLinks.body).toEqual(expect.arrayContaining(payload.map(p => ({...p, linkId: 1}))));

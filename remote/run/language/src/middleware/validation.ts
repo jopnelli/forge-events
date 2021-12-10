@@ -3,11 +3,11 @@ import Application, {Next} from "koa";
 
 export function validate(schema: Joi.Schema) {
     return async (ctx: Application.ExtendableContext, next: Next) => {
-        try {
-            Joi.assert(ctx.request.body, schema);
-        } catch (e: any) {
-            ctx.body = Joi.isError(e) ? e.details : "Unknown validation error.";
+        const {error} = schema.validate(ctx.request.body);
+        if (error) {
+            ctx.body = error.details;
             ctx.status = 400;
+            return;
         }
         await next();
     }
