@@ -6,11 +6,11 @@ type PageIdToLanguageRecord = Record<number, string>;
 export function languageLinkPersistence({authenticatedParentDoc}: { authenticatedParentDoc: DocumentReference }) {
 
     const linkCollection = authenticatedParentDoc.collection("links") as CollectionReference<LanguageLinkInFirestore>;
-    const {runTransaction} = authenticatedParentDoc.firestore;
+    const db = authenticatedParentDoc.firestore;
 
     async function updateLinks(linkRequestItems: LinkRequestItem[]): Promise<number[]> {
         console.log({linkRequestItems});
-        return await runTransaction(async transaction => {
+        return await db.runTransaction(async transaction => {
             const relatedLanguageLinks: LanguageLinkInFirestore[] = await getRelatedLanguageLinks({
                 transaction,
                 linkRequestItems
@@ -46,7 +46,7 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
     }
 
     async function getLinksByPageId({pageId}: { pageId: number }): Promise<LanguageLinkInFirestore[]> {
-        return runTransaction(async transaction => {
+        return db.runTransaction(async transaction => {
             const querySnapshotOfLanguageLinkByPageId = await transaction.get(linkCollection.where("pageId", "==", pageId));
             if (querySnapshotOfLanguageLinkByPageId.size === 0) {
                 return [];
