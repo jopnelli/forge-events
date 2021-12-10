@@ -74,4 +74,27 @@ describe('PUT /', () => {
         const languageLinks = await request(app.callback()).get("/page/1");
         expect(languageLinks.body).toEqual(expect.arrayContaining(payload.map(p => ({...p, linkId: 1}))));
     });
+
+    test('unlinks links when overridden by new linkages but keeps their language', async () => {
+        const payloads = [
+            [
+                {pageId: 1, languageISO2: "ru"},
+                {pageId: 2, languageISO2: "en"},
+                {pageId: 3, languageISO2: "fr"}
+            ],
+            [
+                {pageId: 3, languageISO2: "fr"},
+                {pageId: 4, languageISO2: "ru"}
+            ]];
+        await request(app.callback()).put("/").send(payloads[0]);
+        await request(app.callback()).put("/").send(payloads[1]);
+        const languageLinks1 = await request(app.callback()).get("/page/3");
+        expect(languageLinks1.body).toEqual(expect.arrayContaining([{pageId: 3, languageISO2: "fr", linkId: 3}, {pageId: 4, languageISO2: "ru", linkId: 3}]));
+        const languageLinks2 = await request(app.callback()).get("/page/1");
+        expect(languageLinks2.body).toEqual(expect.arrayContaining([{pageId: 1, languageISO2: "ru", linkId: 0}]));
+        const languageLinks3 = await request(app.callback()).get("/page/2");
+        expect(languageLinks3.body).toEqual(expect.arrayContaining([{pageId: 2, languageISO2: "en", linkId: 0}]));
+    });
+
+
 });

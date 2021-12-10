@@ -25,10 +25,9 @@ router.get('/test', async ctx => {
 });
 // updateLinking
 router.put("/", validate(linkRequestItemSchemas), async ctx => {
+    const {authenticatedParentDoc} = ctx;
     const linkRequestItems: LinkRequestItem[] = ctx.request.body;
-    ctx.body = await languageLinkPersistence({
-        authenticatedParentDoc: ctx.authenticatedParentDoc
-    }).updateLinks(linkRequestItems);
+    ctx.body = await languageLinkPersistence({authenticatedParentDoc}).updateLinks(linkRequestItems);
 });
 
 // getLanguageLinksByLinkId
@@ -39,15 +38,11 @@ router.get("/:linkId", async ctx => {
 
 // getViewableLanguageLinksByPage
 router.get("/page/:pageId", async ctx => {
+    const {authenticatedParentDoc} = ctx;
     const {pageId} = ctx.params
-    const queryResult = await ctx.authenticatedParentDoc.collection(LINK_COLLECTION).where("pageId", "==", Number(pageId)).get();
-    if (queryResult.empty) {
-        ctx.throw(404, "language link not found");
-        return;
-    }
-    const languageLink: LanguageLinkInFirestore = queryResult.docs[0].data() as LanguageLinkInFirestore;
-    const linksQueryResult = await ctx.authenticatedParentDoc.collection(LINK_COLLECTION).where("linkId", "==", languageLink.linkId).get();
-    ctx.body = linksQueryResult.docs.map(doc => doc.data() as LanguageLinkInFirestore);
+    const pageIdAsNumber: number = Number(pageId);
+    Number.isNaN(pageIdAsNumber) && ctx.throw(400, "Bad pageId");
+    ctx.body = await languageLinkPersistence({authenticatedParentDoc}).getLinksByPageId({pageId: Number(pageId)});
 });
 
 // removeLinkFromPage

@@ -1,5 +1,5 @@
 import {LanguageLinkInFirestore, LinkRequestItem} from "../../../../../types/types";
-import {CollectionReference, DocumentReference, Firestore, Transaction} from "@google-cloud/firestore";
+import {CollectionReference, DocumentReference} from "@google-cloud/firestore";
 
 
 export function languageLinkPersistence({authenticatedParentDoc}: { authenticatedParentDoc: DocumentReference }) {
@@ -48,9 +48,19 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
         });
     }
 
-    async function getLinksByPageId({pageId}: {pageId: number}): Promise<LanguageLinkInFirestore[]> {
+    async function getLinksByPageId({pageId}: { pageId: number }): Promise<LanguageLinkInFirestore[]> {
         const querySnapshot = await linkCollection.where("pageId", "==", pageId).get();
-        return querySnapshot.docs.map(d => d.data());
+        if (querySnapshot.size === 0) {
+            return [];
+        }
+        if (querySnapshot.size > 1) {
+            console.warn(`PageId ${pageId} has more than one language link. That is an inconsistent state. Implementation will use a random linkId.`);
+        }
+        const languageLinkByPageId: LanguageLinkInFirestore = querySnapshot.docs.map(d => d.data())[0];
+        if (languageLinkByPageId.linkId === 0) {
+            return [languageLinkByPageId]
+        }
+        return (await linkCollection.where("linkId", "==", languageLinkByPageId.linkId).get()).docs.map(doc => doc.data());
     }
 
     async function getRelatedLanguageLinks({
