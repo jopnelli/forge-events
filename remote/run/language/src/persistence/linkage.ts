@@ -1,6 +1,7 @@
 import {LanguageLinkInFirestore, LinkRequestItem} from "../../../../../types/types";
 import {CollectionReference, DocumentReference} from "@google-cloud/firestore";
 
+type PageIdToLanguageRecord = Record<number, string>;
 
 export function languageLinkPersistence({authenticatedParentDoc}: { authenticatedParentDoc: DocumentReference }) {
 
@@ -14,8 +15,8 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
                 transaction,
                 linkRequestItems
             });
-            const relatedPageIdsToLanguageRecord: Record<number, string> = relatedLanguageLinks.reduce((l1, l2) => ({...l1, ...{[l2.pageId]: l2.languageISO2}}), {});
-            const requestedPageIdsToLanguageRecord: Record<number, string> = linkRequestItems.reduce((l1, l2) => ({...l1, ...{[l2.pageId]: l2.languageISO2}}), {});
+            const relatedPageIdsToLanguageRecord: PageIdToLanguageRecord = relatedLanguageLinks.reduce((l1, l2) => ({...l1, ...{[l2.pageId]: l2.languageISO2}}), {});
+            const requestedPageIdsToLanguageRecord: PageIdToLanguageRecord = linkRequestItems.reduce((l1, l2) => ({...l1, ...{[l2.pageId]: l2.languageISO2}}), {});
             console.log({
                 relatedPageIdsToLanguageRecord,
                 requestedPageIdsToLanguageRecord
@@ -49,18 +50,21 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
     }
 
     async function getLinksByPageId({pageId}: { pageId: number }): Promise<LanguageLinkInFirestore[]> {
-        const querySnapshot = await linkCollection.where("pageId", "==", pageId).get();
-        if (querySnapshot.size === 0) {
-            return [];
-        }
-        if (querySnapshot.size > 1) {
-            console.warn(`PageId ${pageId} has more than one language link. That is an inconsistent state. Implementation will use a random linkId.`);
-        }
-        const languageLinkByPageId: LanguageLinkInFirestore = querySnapshot.docs.map(d => d.data())[0];
-        if (languageLinkByPageId.linkId === 0) {
-            return [languageLinkByPageId]
-        }
-        return (await linkCollection.where("linkId", "==", languageLinkByPageId.linkId).get()).docs.map(doc => doc.data());
+        return db.runTransaction(async transaction => {
+            const querySnapshotOfLanguageLinkByPageId = await transaction.get(linkCollection.where("pageId", "==", pageId));
+            if (querySnapshotOfLanguageLinkByPageId.size === 0) {
+                return [];
+            }
+            if (querySnapshotOfLanguageLinkByPageId.size > 1) {
+                console.warn(`PageId ${pageId} has more than one language link. That is an inconsistent state. Implementation will use a random linkId.`);
+            }
+            const languageLinkByPageId: LanguageLinkInFirestore = querySnapshotOfLanguageLinkByPageId.docs.map(d => d.data())[0];
+            if (languageLinkByPageId.linkId === 0) {
+                return [languageLinkByPageId]
+            }
+            const querySnapshotOfAllRelatedLinksByLinkId = await transaction.get(linkCollection.where("linkId", "==", languageLinkByPageId.linkId));
+            return querySnapshotOfAllRelatedLinksByLinkId.docs.map(doc => doc.data());
+        })
     }
 
     async function getRelatedLanguageLinks({
@@ -98,7 +102,7 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
         return Math.min(...linkRequestItems.map(l => l.pageId))
     }
 
-    function isEqual(record1: Record<number, string>, record2: Record<number, string>): boolean {
+    function isEqual(record1: PageIdToLanguageRecord, record2: PageIdToLanguageRecord): boolean {
         const keysOfRecord1: string[] = Object.keys(record1);
         const keysOfRecord2: string[] = Object.keys(record2);
         if (keysOfRecord1.length !== keysOfRecord2.length) {

@@ -85,15 +85,27 @@ describe('PUT /', () => {
             [
                 {pageId: 3, languageISO2: "fr"},
                 {pageId: 4, languageISO2: "ru"}
+            ],
+            [
+                {pageId: 10, languageISO2: "fr"},
+                {pageId: 11, languageISO2: "ru"}
             ]];
         await request(app.callback()).put("/").send(payloads[0]);
         await request(app.callback()).put("/").send(payloads[1]);
+        await request(app.callback()).put("/").send(payloads[2]);
         const languageLinks1 = await request(app.callback()).get("/page/3");
         expect(languageLinks1.body).toEqual(expect.arrayContaining([{pageId: 3, languageISO2: "fr", linkId: 3}, {pageId: 4, languageISO2: "ru", linkId: 3}]));
         const languageLinks2 = await request(app.callback()).get("/page/1");
         expect(languageLinks2.body).toEqual(expect.arrayContaining([{pageId: 1, languageISO2: "ru", linkId: 0}]));
         const languageLinks3 = await request(app.callback()).get("/page/2");
         expect(languageLinks3.body).toEqual(expect.arrayContaining([{pageId: 2, languageISO2: "en", linkId: 0}]));
+        const languageLinks4 = await request(app.callback()).get("/page/11");
+        expect(languageLinks4.body).toEqual(expect.arrayContaining([{pageId: 10, languageISO2: "fr", linkId: 10}, {pageId: 11, languageISO2: "ru", linkId: 10}]));
+    });
+
+    test('returns empty array for pageId without link', async () => {
+        const languageLinks = await request(app.callback()).get("/page/123");
+        expect(languageLinks.body.length).toEqual(0);
     });
 
 
