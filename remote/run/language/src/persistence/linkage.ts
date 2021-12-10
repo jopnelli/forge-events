@@ -7,9 +7,9 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
     const linkCollection = authenticatedParentDoc.collection("links") as CollectionReference<LanguageLinkInFirestore>;
     const db = authenticatedParentDoc.firestore;
 
-    async function updateLinks(linkRequestItems: LinkRequestItem[]) {
+    async function updateLinks(linkRequestItems: LinkRequestItem[]): Promise<number[]> {
         console.log({linkRequestItems});
-        await db.runTransaction(async transaction => {
+        return await db.runTransaction(async transaction => {
             const relatedLanguageLinks: LanguageLinkInFirestore[] = await getRelatedLanguageLinks({
                 transaction,
                 linkRequestItems
@@ -46,6 +46,11 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
             await Promise.all(writes);
             return [...newLanguageLinks, ...updatedLanguageLinks].map(l => l.pageId);
         });
+    }
+
+    async function getLinksByPageId({pageId}: {pageId: number}): Promise<LanguageLinkInFirestore[]> {
+        const querySnapshot = await linkCollection.where("pageId", "==", pageId).get();
+        return querySnapshot.docs.map(d => d.data());
     }
 
     async function getRelatedLanguageLinks({
@@ -93,6 +98,7 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
     }
 
     return {
-        updateLinks
+        updateLinks,
+        getLinksByPageId
     }
 }
