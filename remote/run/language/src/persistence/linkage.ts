@@ -6,11 +6,11 @@ type PageIdToLanguageRecord = Record<number, string>;
 export function languageLinkPersistence({authenticatedParentDoc}: { authenticatedParentDoc: DocumentReference }) {
 
     const linkCollection = authenticatedParentDoc.collection("links") as CollectionReference<LanguageLinkInFirestore>;
-    const db = authenticatedParentDoc.firestore;
+    const {runTransaction} = authenticatedParentDoc.firestore;
 
     async function updateLinks(linkRequestItems: LinkRequestItem[]): Promise<number[]> {
         console.log({linkRequestItems});
-        return await db.runTransaction(async transaction => {
+        return await runTransaction(async transaction => {
             const relatedLanguageLinks: LanguageLinkInFirestore[] = await getRelatedLanguageLinks({
                 transaction,
                 linkRequestItems
@@ -26,31 +26,27 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
             }
             const linkId = determineLinkId(linkRequestItems);
             const newLanguageLinks: LanguageLinkInFirestore[] = linkRequestItems.filter(i => !relatedPageIdsToLanguageRecord[i.pageId]).map(i => ({linkId, ...i}));
-            const updatedLanguageLinks: LanguageLinkInFirestore[] = relatedLanguageLinks.filter(l => requestedPageIdsToLanguageRecord[l.pageId]).map(l => {
-                const pageId = l.pageId;
-                return {
-                    pageId,
-                    linkId,
-                    languageISO2: requestedPageIdsToLanguageRecord[pageId]
-                }
-            });
+            const updatedLanguageLinks: LanguageLinkInFirestore[] = relatedLanguageLinks.filter(l => requestedPageIdsToLanguageRecord[l.pageId]).map(({pageId}) => ({
+                pageId,
+                linkId,
+                languageISO2: requestedPageIdsToLanguageRecord[pageId]
+            }));
             const unlinkedLanguageLinks = relatedLanguageLinks.filter(l => !requestedPageIdsToLanguageRecord[l.pageId]).map(l => ({
                 ...l,
                 linkId: 0
             }));
-            const writes = [...newLanguageLinks, ...updatedLanguageLinks, ...unlinkedLanguageLinks].map(link => {
+            [...newLanguageLinks, ...updatedLanguageLinks, ...unlinkedLanguageLinks].forEach(link => {
                 transaction.set(linkCollection.doc(link.pageId.toString()), link)
             });
             console.log({
                 newLanguageLinks, updatedLanguageLinks, unlinkedLanguageLinks
             })
-            await Promise.all(writes);
             return [...newLanguageLinks, ...updatedLanguageLinks].map(l => l.pageId);
         });
     }
 
     async function getLinksByPageId({pageId}: { pageId: number }): Promise<LanguageLinkInFirestore[]> {
-        return db.runTransaction(async transaction => {
+        return runTransaction(async transaction => {
             const querySnapshotOfLanguageLinkByPageId = await transaction.get(linkCollection.where("pageId", "==", pageId));
             if (querySnapshotOfLanguageLinkByPageId.size === 0) {
                 return [];
