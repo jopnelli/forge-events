@@ -36,10 +36,13 @@ permissions:
   content:
     styles:
       - unsafe-inline
+    scripts:
+      ## TODO: drop before release (just needed for development)
+      - unsafe-inline
   external:
     fetch:
       backend:
         - "language-manager.seibert-media.net"
-        - "*.loophole.site" ## TODO: drop before release
+        - "*.loophole.site" ## TODO: drop before release (just needed for development)
 app:
   id: ari:cloud:ecosystem::app/54694889-3bf5-450b-924c-0db3a94028e4
