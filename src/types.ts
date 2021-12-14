@@ -1,4 +1,5 @@
 // automatically generated as Atlassian doesn't provide it
+// this object is provided when a forge lambda is invoked from a Confluence page. may differ in other locations.
 export interface ForgePageInvocationContext {
     cloudId:        string;
     localId:        string;

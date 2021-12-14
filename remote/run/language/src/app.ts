@@ -4,16 +4,17 @@ import Router from '@koa/router';
 import {AppContext} from "./app-types";
 import koaBody from "koa-body";
 import {linkRequestItemSchemas} from "./schema/linkage";
-import {validate} from "./middleware/validation";
+import {assertSchema} from "./middleware/validation";
 import {LinkRequestItem} from "../../../../types/types";
 import {languageLinkPersistence} from "./persistence/linkage";
 
 const router = new Router<{}, AppContext>();
 
-router.put("/", validate(linkRequestItemSchemas), async ctx => {
+router.put("/", assertSchema(linkRequestItemSchemas), async ctx => {
     const {authenticatedParentDoc} = ctx;
     const linkRequestItems: LinkRequestItem[] = ctx.request.body;
-    ctx.body = await languageLinkPersistence({authenticatedParentDoc}).updateLinks(linkRequestItems);
+    const persistence = languageLinkPersistence({authenticatedParentDoc});
+    ctx.body = await persistence.updateLinks(linkRequestItems);
 });
 
 router.get("/page/:pageId", async ctx => {
@@ -21,7 +22,8 @@ router.get("/page/:pageId", async ctx => {
     const {pageId} = ctx.params
     const pageIdAsNumber: number = Number(pageId);
     (Number.isNaN(pageIdAsNumber) || pageIdAsNumber === 0) && ctx.throw(400, "Bad pageId");
-    ctx.body = await languageLinkPersistence({authenticatedParentDoc}).getLinksByPageId({pageId: Number(pageId)});
+    const persistence = languageLinkPersistence({authenticatedParentDoc});
+    ctx.body = await persistence.getLinksByPageId({pageId: Number(pageId)});
 });
 
 export const composeApp = ({preRouterInjection}: { preRouterInjection: (app: Application<{}, AppContext>) => Application<{}, AppContext> }) => {

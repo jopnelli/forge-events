@@ -9,7 +9,6 @@ export function languageLinkPersistence({authenticatedParentDoc}: { authenticate
     const db = authenticatedParentDoc.firestore;
 
     async function updateLinks(linkRequestItems: LinkRequestItem[]): Promise<number[]> {
-        console.log({linkRequestItems});
         return await db.runTransaction(async transaction => {
             const relatedLanguageLinks: LanguageLinkInFirestore[] = await getRelatedLanguageLinks({
                 transaction,

@@ -1,21 +1,23 @@
 import Resolver from '@forge/resolver';
-import {fetch} from "@forge/api";
+import {LinkRequestItem} from "../types/types";
+import {linkRequestItemSchemas} from "../remote/run/language/src/schema/linkage";
+import {getLinks, putLinks} from "./persistence";
+import {assertSchema} from "./validation";
 import {ForgePageInvocationContext} from "./types";
 
 const resolver = new Resolver();
 
-const getRemoteHostToken = () => process.env.DATABASE_TOKEN || "";
-const getRemoteHostUrl = () => process.env.LOOPHOLE_HOST ? `https://${process.env.LOOPHOLE_HOST}.loophole.site` : "https://language-manager.seibert-media.net";
+resolver.define("putLinks", async (req) => {
+    assertSchema(linkRequestItemSchemas, req.payload);
+    return await putLinks(req.payload as LinkRequestItem[]);
+})
 
-resolver.define("writeToFirestore", async (req) => {
+resolver.define("getLinks", async (req) => {
     const context = req.context as ForgePageInvocationContext;
-    const response = await fetch(getRemoteHostUrl(), {
-        headers: {
-            "Authorization": getRemoteHostToken(),
-        }
-    });
-    console.log(await response.text());
-    console.log(response.status);
+    // TODO: page permission check as extension.content.id could be forged
+    const links = await getLinks(context.extension.content.id);
+    console.log({links});
+    return links;
 })
 
 export const handler = resolver.getDefinitions(); // exports backend function

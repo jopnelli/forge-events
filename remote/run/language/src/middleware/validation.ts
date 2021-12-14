@@ -1,7 +1,7 @@
 import Joi from "joi";
 import Application, {Next} from "koa";
 
-export function validate(schema: Joi.Schema) {
+export function assertSchema(schema: Joi.Schema) {
     return async (ctx: Application.ExtendableContext, next: Next) => {
         const {error} = schema.validate(ctx.request.body);
         if (error) {

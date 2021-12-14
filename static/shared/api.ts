@@ -1,5 +1,10 @@
 import {invoke} from "@forge/bridge";
+import {LanguageLinkInFirestore, LinkRequestItem} from "../../types/types";
 
-export function invokeWriteToFirestore() {
-    return invoke<any>("writeToFirestore")
+export function createLinks(linkRequestItems: LinkRequestItem[]) {
+    return invoke<number[]>("putLinks", linkRequestItems);
+}
+
+export function getLinks() {
+    return invoke<LanguageLinkInFirestore[]>("getLinks");
 }

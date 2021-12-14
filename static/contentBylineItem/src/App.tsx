@@ -2,19 +2,15 @@ import React from "react";
 import styled from "styled-components";
 import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
-import {useAsyncFn} from "react-use";
-import {invokeWriteToFirestore} from "shared/api";
 
 function App() {
-    const [, writeToFirestore] = useAsyncFn(async () => {
-        await invokeWriteToFirestore();
-    }, []);
 
     const openModal = () => {
         const modal = new Modal({
             resource: "modal-res",
             context: {}, // will be passed to modal
-            async onClose() {},
+            async onClose() {
+            },
         });
         modal.open();
     };
@@ -25,7 +21,6 @@ function App() {
                 Proof of concept
             </Headline>
             <Actions>
-                <Button onClick={writeToFirestore} appearance="subtle">Test</Button>
                 <Button onClick={openModal} appearance="subtle">Open modal</Button>
             </Actions>
         </AppWrapper>
