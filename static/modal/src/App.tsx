@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import Select from "@atlaskit/select";
+import {PageSelect} from "shared/SinglePageSelect";
 
 function App() {
     return (
         <AppWrapper>
-            Hey there
+            modal
         </AppWrapper>
     );
 }

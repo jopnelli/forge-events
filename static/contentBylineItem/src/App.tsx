@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
+import {PageSelect} from "shared/PageSelect";
+import {LanguageSelect} from "shared/LanguageSelect";
 
 function App() {
 
@@ -20,6 +22,8 @@ function App() {
             <Headline>
                 Proof of concept
             </Headline>
+            <PageSelect disabledPageIds={["341573633"]} defaultValuePageId={"341573633"} onChange={pageId => console.log(pageId)}/>
+            <LanguageSelect defaultValue={"fr"} onChange={lng => console.log(lng)}/>
             <Actions>
                 <Button onClick={openModal} appearance="subtle">Open modal</Button>
             </Actions>
@@ -29,7 +33,7 @@ function App() {
 
 }
 
-const AppWrapper = styled.div``
+const AppWrapper = styled.div`height: 400px; padding: 0 0.05rem`
 const Headline = styled.h1`
   font-size: 12px;
   text-transform: uppercase;
