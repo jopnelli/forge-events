@@ -5,8 +5,10 @@ import {LanguageSelect} from "shared/LanguageSelect";
 import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsync, useAsyncFn} from "react-use";
 import {createLinks, getLinks} from "shared/api";
-import {LoadingButton} from "@atlaskit/button";
+import Button, {LoadingButton} from "@atlaskit/button";
 import {LinkRequestItem} from "shared-types/types";
+
+const MAX_LINKS = 10;
 
 function App() {
     const atlassianContext = useContext(AtlassianContext);
@@ -22,7 +24,7 @@ function App() {
     });
     const currentPageLanguageLink = useMemo(() => pageLinks.value?.find(link => link.pageId === pageId) || null, [pageLinks, pageId]);
 
-    type LinkRequestItemEditState = { pageId: number, languageISO2: string | null, removed?: boolean };
+    type LinkRequestItemEditState = { pageId: number | null, languageISO2: string | null, removed?: boolean };
     const [newPageLinks, setNewPageLinks] = useState<LinkRequestItemEditState[]>([]);
     const [saveState, save] = useAsyncFn(async () => {
         const linkRequest = newPageLinks.map(link => ({
@@ -32,22 +34,49 @@ function App() {
         await createLinks(linkRequest);
     }, [newPageLinks])
 
-    const editPageLink = (languageLinkUpdate: Partial<LinkRequestItemEditState> & { pageId: number }) =>
+    const editPageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) =>
         setNewPageLinks(prevState =>
-            prevState.map(link => languageLinkUpdate.pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
+            prevState.map(link => pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
         )
+
+    const addEditPageLink = () => setNewPageLinks(prevState => [...prevState, {pageId: null, languageISO2: null}]);
+
+    const isAddingLinkAllowed = useMemo(() => {
+        const lastLink = [...newPageLinks].pop();
+        return lastLink && lastLink.languageISO2 && lastLink.pageId && newPageLinks.length < MAX_LINKS
+    }, [newPageLinks]);
+
+    const selectedPageIds = useMemo(() => newPageLinks
+        .map(link => link.pageId)
+        .filter(pageId => pageId)
+        .map(pageId => pageId!.toString()), [newPageLinks]);
+    const selectedLanguageCodes = useMemo(() => newPageLinks.map(link => link.languageISO2).filter(language => language) as string[], [newPageLinks]);
 
     if (pageLinks.loading) {
         return <div>Loading...</div>;
     }
+
 
     return (
         <AppWrapper>
             {JSON.stringify(newPageLinks)}
             <PageSelect disabled defaultValuePageId={pageId.toString()}/>
             <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
-                            onChange={languageCode => editPageLink({languageISO2: languageCode, pageId})}/>
+                            onChange={languageCode => editPageLink(pageId, {languageISO2: languageCode, pageId})}/>
+            <Button onClick={addEditPageLink} isDisabled={!isAddingLinkAllowed}>Add link</Button>
             <LoadingButton appearance={"primary"} onClick={save} isLoading={saveState.loading}>Save</LoadingButton>
+            {
+                newPageLinks.filter(link => link.pageId !== pageId).map(link => <div key={link.pageId}>
+                    <PageSelect
+                        defaultValuePageId={link.pageId?.toString()}
+                        disabledPageIds={selectedPageIds}
+                        onChange={pageId => editPageLink(link.pageId, {pageId: parseInt(pageId)})}
+                    />
+                    <LanguageSelect defaultValue={link.languageISO2}
+                                    disabledLanguageCodes={selectedLanguageCodes}
+                                    onChange={languageCode => editPageLink(link.pageId, {languageISO2: languageCode})}/>
+                </div>)
+            }
         </AppWrapper>
     );
 }
