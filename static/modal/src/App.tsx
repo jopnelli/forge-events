@@ -12,7 +12,7 @@ function App() {
     const pageId: number = parseInt(atlassianContext.forgeContext.extension.content.id);
     const pageLinks = useAsync(async () => {
         const loadedLinks = await getLinks();
-        setNewPageLinks(loadedLinks);
+        setNewPageLinks(loadedLinks.map(({pageId, languageISO2}) => ({pageId, languageISO2})));
         return loadedLinks;
     });
     const currentPageLanguageLink = useMemo(() => {
@@ -21,7 +21,8 @@ function App() {
         }
         return pageLinks.value.find(link => link.pageId === pageId) || null;
     }, [pageLinks, pageId]);
-    const [newPageLinks, setNewPageLinks] = useState<LinkRequestItem[]>([]);
+
+    const [newPageLinks, setNewPageLinks] = useState<(LinkRequestItem & { removed?: boolean })[]>([]);
 
     const editPageLink = (languageLinkUpdate: Partial<LanguageLinkInFirestore> & { pageId: number }) =>
         setNewPageLinks(prevState =>
@@ -38,7 +39,6 @@ function App() {
             <PageSelect disabled defaultValuePageId={pageId.toString()}/>
             <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
                             onChange={languageCode => editPageLink({languageISO2: languageCode, pageId})}/>
-
 
         </AppWrapper>
     );
