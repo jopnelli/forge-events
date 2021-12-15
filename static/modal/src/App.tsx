@@ -9,6 +9,8 @@ import Button, {LoadingButton} from "@atlaskit/button";
 import {LinkRequestItem} from "shared-types/types";
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 import UndoIcon from '@atlaskit/icon/glyph/undo';
+import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+import {router} from "@forge/bridge";
 
 const MAX_LINKS = 10;
 
@@ -20,7 +22,7 @@ function App() {
         const newPageLinks: LinkRequestItemEditState[] = !loadedLinks.length ? [{
             pageId,
             languageISO2: null,
-        }] : loadedLinks.map(({pageId, languageISO2}) => ({pageId, languageISO2}));
+        }] : loadedLinks.map(({pageId, languageISO2, url}) => ({pageId, languageISO2, url}));
         setNewPageLinks(newPageLinks);
         return newPageLinks;
     })
@@ -29,7 +31,7 @@ function App() {
         fetch();
     }, [fetch]);
 
-    type LinkRequestItemEditState = { pageId: number | null, languageISO2: string | null, removed?: boolean };
+    type LinkRequestItemEditState = { pageId: number | null, languageISO2: string | null, removed?: boolean, url?: string };
     const [newPageLinks, setNewPageLinks] = useState<LinkRequestItemEditState[]>([]);
     const [saveState, save] = useAsyncFn(async () => {
         const linkRequest = newPageLinks
@@ -81,6 +83,9 @@ function App() {
                     <LanguageSelect defaultValue={link.languageISO2}
                                     disabledLanguageCodes={selectedLanguageCodes}
                                     onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
+                    <Button onClick={() => link.url && router.open(link.url)}>
+                        <ShortcutIcon label="external" size="small"></ShortcutIcon>
+                    </Button>
                     <Button onClick={() => updatePageLink(link.pageId, {removed: !link.removed})}>
                         {link.removed ? <UndoIcon label="undo" size="small"/> : <TrashIcon label="trash" size="small"/>}
                     </Button>

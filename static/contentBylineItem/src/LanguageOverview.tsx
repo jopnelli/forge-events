@@ -24,7 +24,7 @@ export function LanguageOverview() {
         return <div>no page links</div>;
     }
 
-    return <div>{pageLinks.value?.map((pageLink: LanguageLinkInFirestore) => <LanguageButton language={pageLink.languageISO2} pageId={pageLink.pageId}
+    return <div>{pageLinks.value?.map((pageLink) => <LanguageButton language={pageLink.languageISO2} pageId={pageLink.pageId} url={pageLink.url}
         key={pageLink.pageId} />)}</div>;
 
 }
@@ -32,21 +32,15 @@ export function LanguageOverview() {
 interface LanguageButtonProps {
     language: string
     pageId: number
+    url?: string
 }
 
-function LanguageButton({language, pageId}: LanguageButtonProps) {
+function LanguageButton({language, pageId, url}: LanguageButtonProps) {
     const atlassianContext = useContext(AtlassianContext);
     const currentPageId = atlassianContext.forgeContext.extension.content.id;
 
-    const [pageLink, fetch] = useAsyncFn(async () => {
-        const response = await requestConfluence(`/rest/api/content/${pageId}`);
-        // TODO: Error handling, prefetch in backend to load all hrefs to linked pages
-        const pageResponse = await response.json();
-        await router.open(`${pageResponse._links.context}${pageResponse._links.webui}`);
-    });
-
     return <ButtonWrapper>
-        <LoadingButton appearance="subtle-link" shouldFitContainer isLoading={pageLink.loading} onClick={fetch} isDisabled={pageId.toString() === currentPageId}>
+        <LoadingButton appearance="subtle-link" shouldFitContainer onClick={() => url && router.open(url)} isDisabled={pageId.toString() === currentPageId}>
             {VALID_LANGUAGES[language]}
             {pageId.toString() === currentPageId && " (this page)"}
         </LoadingButton>

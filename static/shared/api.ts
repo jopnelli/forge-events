@@ -6,5 +6,5 @@ export function createLinks(linkRequestItems: LinkRequestItem[]) {
 }
 
 export function getLinks() {
-    return invoke<LanguageLinkInFirestore[]>("getLinks");
+    return invoke<(LanguageLinkInFirestore & { url?: string })[]>("getLinks");
 }

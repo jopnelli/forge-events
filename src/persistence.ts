@@ -1,4 +1,4 @@
-import {LinkRequestItem} from "../types/types";
+import {LanguageLinkInFirestore, LinkRequestItem} from "../types/types";
 import {RequestInit} from "node-fetch";
 import {APIResponse, fetch} from "@forge/api";
 
@@ -13,7 +13,7 @@ export async function putLinks(linkRequestItems: LinkRequestItem[]): Promise<num
     return await response.json();
 }
 
-export async function getLinks(pageId: string): Promise<unknown> {
+export async function getLinks(pageId: string): Promise<LanguageLinkInFirestore[]> {
     const response = await requestRemoteDatabase<number[]>({path: "page/" + pageId, options: {method: "GET"}});
     if (!response.ok) {
         throw new Error("Could not get links. " + await response.text())
