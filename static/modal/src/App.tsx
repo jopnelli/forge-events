@@ -1,19 +1,21 @@
-import React, {useContext, useMemo, useState} from "react";
+import React, {useContext, useEffect, useMemo, useState} from "react";
 import styled from "styled-components";
 import {PageSelect} from "shared/PageSelect";
 import {LanguageSelect} from "shared/LanguageSelect";
 import {AtlassianContext} from "shared/AtlassianContext";
-import {useAsync, useAsyncFn} from "react-use";
+import {useAsyncFn} from "react-use";
 import {createLinks, getLinks} from "shared/api";
 import Button, {LoadingButton} from "@atlaskit/button";
 import {LinkRequestItem} from "shared-types/types";
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import UndoIcon from '@atlaskit/icon/glyph/undo';
 
 const MAX_LINKS = 10;
 
 function App() {
     const atlassianContext = useContext(AtlassianContext);
     const pageId: number = parseInt(atlassianContext.forgeContext.extension.content.id);
-    const pageLinks = useAsync(async () => {
+    const [pageLinks, fetch] = useAsyncFn(async () => {
         const loadedLinks = await getLinks();
         const newPageLinks: LinkRequestItemEditState[] = !loadedLinks.length ? [{
             pageId,
@@ -21,20 +23,26 @@ function App() {
         }] : loadedLinks.map(({pageId, languageISO2}) => ({pageId, languageISO2}));
         setNewPageLinks(newPageLinks);
         return newPageLinks;
-    });
+    })
     const currentPageLanguageLink = useMemo(() => pageLinks.value?.find(link => link.pageId === pageId) || null, [pageLinks, pageId]);
+    useEffect(() => {
+        fetch();
+    }, [fetch]);
 
     type LinkRequestItemEditState = { pageId: number | null, languageISO2: string | null, removed?: boolean };
     const [newPageLinks, setNewPageLinks] = useState<LinkRequestItemEditState[]>([]);
     const [saveState, save] = useAsyncFn(async () => {
-        const linkRequest = newPageLinks.map(link => ({
-            languageISO2: link.languageISO2,
-            pageId: link.pageId
-        })) as LinkRequestItem[];
+        const linkRequest = newPageLinks
+            .filter(link => !link.removed)
+            .map(link => ({
+                languageISO2: link.languageISO2,
+                pageId: link.pageId
+            })) as LinkRequestItem[];
         await createLinks(linkRequest);
+        await fetch();
     }, [newPageLinks])
 
-    const editPageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) =>
+    const updatePageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) =>
         setNewPageLinks(prevState =>
             prevState.map(link => pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
         )
@@ -62,7 +70,7 @@ function App() {
             {JSON.stringify(newPageLinks)}
             <PageSelect disabled defaultValuePageId={pageId.toString()}/>
             <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
-                            onChange={languageCode => editPageLink(pageId, {languageISO2: languageCode, pageId})}/>
+                            onChange={languageCode => updatePageLink(pageId, {languageISO2: languageCode, pageId})}/>
             <Button onClick={addEditPageLink} isDisabled={!isAddingLinkAllowed}>Add link</Button>
             <LoadingButton appearance={"primary"} onClick={save} isLoading={saveState.loading}>Save</LoadingButton>
             {
@@ -70,11 +78,14 @@ function App() {
                     <PageSelect
                         defaultValuePageId={link.pageId?.toString()}
                         disabledPageIds={selectedPageIds}
-                        onChange={pageId => editPageLink(link.pageId, {pageId: parseInt(pageId)})}
+                        onChange={pageId => updatePageLink(link.pageId, {pageId: parseInt(pageId)})}
                     />
                     <LanguageSelect defaultValue={link.languageISO2}
                                     disabledLanguageCodes={selectedLanguageCodes}
-                                    onChange={languageCode => editPageLink(link.pageId, {languageISO2: languageCode})}/>
+                                    onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
+                    <Button onClick={() => updatePageLink(link.pageId, {removed: !link.removed})}>
+                        {link.removed ? <UndoIcon label="undo" size="small"/> : <TrashIcon label="trash" size="small"/>}
+                    </Button>
                 </div>)
             }
         </AppWrapper>
