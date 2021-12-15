@@ -3,7 +3,7 @@ import Select, {ValueType} from '@atlaskit/select';
 import {VALID_LANGUAGES} from "../../types/valid-languages";
 
 interface Props {
-    defaultValue?: string
+    defaultValue?: string | null
     onChange?: (languageCode: string) => unknown
 }
 
