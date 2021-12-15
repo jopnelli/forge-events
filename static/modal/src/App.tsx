@@ -22,9 +22,10 @@ function App() {
         return pageLinks.value.find(link => link.pageId === pageId) || null;
     }, [pageLinks, pageId]);
 
-    const [newPageLinks, setNewPageLinks] = useState<(LinkRequestItem & { removed?: boolean })[]>([]);
+    type LinkRequestItemEditState = LinkRequestItem & { removed?: boolean };
+    const [newPageLinks, setNewPageLinks] = useState<LinkRequestItemEditState[]>([]);
 
-    const editPageLink = (languageLinkUpdate: Partial<LanguageLinkInFirestore> & { pageId: number }) =>
+    const editPageLink = (languageLinkUpdate: Partial<LinkRequestItemEditState> & { pageId: number }) =>
         setNewPageLinks(prevState =>
             prevState.map(link => languageLinkUpdate.pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
         )
