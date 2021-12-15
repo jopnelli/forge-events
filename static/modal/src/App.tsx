@@ -27,6 +27,7 @@ function App() {
         return newPageLinks;
     })
     const currentPageLanguageLink = useMemo(() => pageLinks.value?.find(link => link.pageId === pageId) || null, [pageLinks, pageId]);
+
     useEffect(() => {
         fetch();
     }, [fetch]);
@@ -66,7 +67,6 @@ function App() {
         return <div>Loading...</div>;
     }
 
-
     return (
         <AppWrapper>
             {JSON.stringify(newPageLinks)}
@@ -84,7 +84,7 @@ function App() {
                                     disabledLanguageCodes={selectedLanguageCodes}
                                     onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
                     <Button onClick={() => link.url && router.open(link.url)}>
-                        <ShortcutIcon label="external" size="small"></ShortcutIcon>
+                        <ShortcutIcon label="external" size="small"/>
                     </Button>
                     <Button onClick={() => updatePageLink(link.pageId, {removed: !link.removed})}>
                         {link.removed ? <UndoIcon label="undo" size="small"/> : <TrashIcon label="trash" size="small"/>}
