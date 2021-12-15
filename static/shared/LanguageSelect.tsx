@@ -6,12 +6,15 @@ interface Props {
     defaultValue?: string | null
     onChange?: (languageCode: string) => unknown
     disabledLanguageCodes?: string[]
+    disabled?: boolean
 }
 
-export function LanguageSelect({onChange, defaultValue, disabledLanguageCodes = []}: Props) {
+export function LanguageSelect({onChange, defaultValue, disabled, disabledLanguageCodes = []}: Props) {
     return <Select
         options={LANGUAGE_OPTIONS.filter(language => !disabledLanguageCodes.filter(language => defaultValue !== language).includes(language.value))}
-        placeholder="Choose a language"
+        placeholder="Language..."
+        spacing="compact"
+        isDisabled={disabled}
         defaultValue={defaultValue && {value: defaultValue, label: VALID_LANGUAGES[defaultValue]}}
         onChange={change => onChange && onChange((change as { value: string, label: string }).value)}
     />

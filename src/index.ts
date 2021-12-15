@@ -17,12 +17,10 @@ resolver.define("putLinks", async (req) => {
 resolver.define("getLinks", async (req) => {
     const context = req.context as ForgePageInvocationContext;
     // TODO: page permission check as extension.content.id could be forged
-    const links = await getLinks(context.extension.content.id);
+    const links = await getLinks(req.payload.pageId || context.extension.content.id);
     const pageIds = links.map(link => link.pageId);
     const response = await asApp().requestConfluence(route`/rest/api/search?cql=type=page and id in (${pageIds.join(",")})`);
     const searchResults: CqlSearchResult = await response.json();
-
-    console.log({links});
     return links.map(link => {
         const searchResult = searchResults.results.find(result => result.content.id === link.pageId.toString());
         if (!searchResult) {

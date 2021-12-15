@@ -35,18 +35,18 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
         if (!response.ok) {
             if (response.status === 403) {
                 return {
-                    label: <PageSelectLabel title={"Locked page"} locked subtitle={defaultValuePageId}/>,
+                    label: <PageSelectLabel title={"Locked page"} locked subtitle={defaultValuePageId} disabled={disabled}/>,
                     value: defaultValuePageId,
                 }
             }
             return {
-                label: <PageSelectLabel title={"Unknown page"} unknown subtitle={defaultValuePageId}/>,
+                label: <PageSelectLabel title={"Unknown page"} unknown subtitle={defaultValuePageId} disabled={disabled}/>,
                 value: defaultValuePageId,
             }
         }
         const page = await response.json() as PageFromContentAPI;
         return {
-            label: <PageSelectLabel title={page.title} subtitle={page.space.name}/>,
+            label: <PageSelectLabel title={page.title} subtitle={page.space.name} disabled={disabled}/>,
             value: defaultValuePageId,
         }
     }, [defaultValuePageId]);
@@ -61,7 +61,9 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
             .map(result => {
                 return {
                     label: <PageSelectLabel title={result.content.title}
-                                            subtitle={result.resultGlobalContainer.title}/>,
+                                            subtitle={result.resultGlobalContainer.title}
+                                            disabled={disabled}
+                    />,
                     value: result.content.id
                 }
             });
@@ -73,6 +75,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
             placeholder={<SkeletonItem isShimmering cssFn={css => ({padding: 0, width: "250px"})}/>}
             isLoading
             isDisabled
+            spacing="compact"
         />
     }
 
@@ -84,17 +87,20 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
         defaultOptions
         onChange={change => onChange && onChange((change as { value: string, label: ReactElement }).value)}
         inputId="page-select"
+        spacing="compact"
+        placeholder="Select a page..."
     />
 
 }
 
 const PageSelectLabel = styled(({
-                                    title,
-                                    subtitle,
-                                    className,
-                                    locked,
-                                    unknown,
-                                }: { title: string, subtitle: string, className?: string, locked?: boolean, unknown?: boolean }) => (
+                                                           title,
+                                                           subtitle,
+                                                           className,
+                                                           locked,
+                                                           unknown,
+                                                           disabled
+                                                       }: { title: string, subtitle: string, className?: string, locked?: boolean, unknown?: boolean, disabled?: boolean }) => (
     <span className={className}>
         <span className="title">
             {locked && <LockIcon label="lock-icon" size="medium"/>}
@@ -114,7 +120,7 @@ const PageSelectLabel = styled(({
       }
 
       .subtitle {
-        color: rgb(107, 119, 140);
+        color: ${props => !props.disabled ? "rgb(107, 119, 140);" : "unset"}
         padding-left: 0.25rem;
       }
     `
