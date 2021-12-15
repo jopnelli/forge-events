@@ -71,8 +71,6 @@ function App() {
             <PageSelect disabled defaultValuePageId={pageId.toString()}/>
             <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
                             onChange={languageCode => updatePageLink(pageId, {languageISO2: languageCode, pageId})}/>
-            <Button onClick={addEditPageLink} isDisabled={!isAddingLinkAllowed}>Add link</Button>
-            <LoadingButton appearance={"primary"} onClick={save} isLoading={saveState.loading}>Save</LoadingButton>
             {
                 newPageLinks.filter(link => link.pageId !== pageId).map(link => <div key={link.pageId}>
                     <PageSelect
@@ -88,6 +86,9 @@ function App() {
                     </Button>
                 </div>)
             }
+
+            <Button onClick={addEditPageLink} isDisabled={!isAddingLinkAllowed}>Add link</Button>
+            <LoadingButton appearance={"primary"} onClick={save} isLoading={saveState.loading}>Save</LoadingButton>
         </AppWrapper>
     );
 }
