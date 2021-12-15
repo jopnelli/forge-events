@@ -21,7 +21,7 @@ function App() {
     return (
         <AppWrapper>
             <Headline>
-                Proof of concept
+                Available languages
             </Headline>
             <LanguageOverview/>
             <Actions>

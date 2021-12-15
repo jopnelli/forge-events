@@ -1,7 +1,7 @@
 import React, {useContext, useEffect} from 'react';
 import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsync, useAsyncFn} from "react-use";
-import {createLinks, getLinks} from "shared/api";
+import {getLinks} from "shared/api";
 import {LanguageLinkInFirestore} from "../../../types/types";
 import LoadingButton from '@atlaskit/button/loading-button';
 import {VALID_LANGUAGES} from "./valid-languages";
@@ -11,10 +11,7 @@ import styled from "styled-components";
 export function LanguageOverview() {
     const atlassianContext = useContext(AtlassianContext);
     const pageId = atlassianContext.forgeContext.extension.content.id;
-    const pageLinks = useAsync(async () => await getLinks());
-    // useEffect(() => {
-    //     createLinks([{pageId: 40960001, languageISO2: "en"}, {pageId: 262362, languageISO2: "de"}])
-    // }, []);
+    const pageLinks = useAsync(getLinks);
     if (pageLinks.loading) {
         return <div>please wait...</div>;
     }
@@ -43,13 +40,13 @@ function LanguageButton({language, pageId}: LanguageButtonProps) {
 
     const [pageLink, fetch] = useAsyncFn(async () => {
         const response = await requestConfluence(`/rest/api/content/${pageId}`);
-        // TODO: Error handling
+        // TODO: Error handling, prefetch in backend to load all hrefs to linked pages
         const pageResponse = await response.json();
         await router.open(`${pageResponse._links.context}${pageResponse._links.webui}`);
     });
 
     return <ButtonWrapper>
-        <LoadingButton shouldFitContainer isLoading={pageLink.loading} onClick={fetch} isDisabled={pageId.toString() === currentPageId}>
+        <LoadingButton appearance="subtle-link" shouldFitContainer isLoading={pageLink.loading} onClick={fetch} isDisabled={pageId.toString() === currentPageId}>
             {VALID_LANGUAGES[language]}
             {pageId.toString() === currentPageId && " (this page)"}
         </LoadingButton>

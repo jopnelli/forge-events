@@ -11,6 +11,7 @@ interface Props {
     disabledPageIds?: string[],
     defaultValuePageId?: string,
     onChange?: (pageId: string) => unknown,
+    disabled?: boolean
 }
 
 /**
@@ -23,7 +24,7 @@ interface Props {
  * @param onChange
  * callback to be invoked with newly created pageId
  */
-export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange}: Props) {
+export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, disabled}: Props) {
     const preselectedPage = useAsync(async () => {
         if (!defaultValuePageId) {
             return null;
@@ -76,7 +77,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange}:
 
     return <AsyncSelect
         isLoading={preselectedPage.loading}
-        isDisabled={preselectedPage.loading}
+        isDisabled={preselectedPage.loading || disabled}
         loadOptions={search}
         defaultValue={defaultValuePageId && preselectedPage.value}
         defaultOptions
