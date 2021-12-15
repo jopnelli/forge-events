@@ -5,11 +5,11 @@ import {LanguageSelect} from "shared/LanguageSelect";
 import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsync} from "react-use";
 import {getLinks} from "shared/api";
-import {LanguageLinkInFirestore} from "shared-types/types";
+import {LanguageLinkInFirestore, LinkRequestItem} from "shared-types/types";
 
 function App() {
     const atlassianContext = useContext(AtlassianContext);
-    const pageId: string = atlassianContext.forgeContext.extension.content.id;
+    const pageId: number = parseInt(atlassianContext.forgeContext.extension.content.id);
     const pageLinks = useAsync(async () => {
         const loadedLinks = await getLinks();
         setNewPageLinks(loadedLinks);
@@ -19,35 +19,25 @@ function App() {
         if (pageLinks.loading || !pageLinks.value) {
             return null;
         }
-        return pageLinks.value.find(link => link.pageId.toString() === pageId) || null;
-    }, [pageLinks]);
-    const [newPageLinks, setNewPageLinks] = useState<LanguageLinkInFirestore[] | null>(null);
+        return pageLinks.value.find(link => link.pageId === pageId) || null;
+    }, [pageLinks, pageId]);
+    const [newPageLinks, setNewPageLinks] = useState<LinkRequestItem[]>([]);
 
-    const editPageLink = (languageLinkUpdate: Partial<LanguageLinkInFirestore> & { pageId: LanguageLinkInFirestore["pageId"] }) => {
-        setNewPageLinks(prevState => {
-            if (!prevState) {
-                return null;
-            }
-            return prevState.map(link => {
-                if (languageLinkUpdate.pageId !== link.pageId) {
-                    return link;
-                }
-                return {...link, ...languageLinkUpdate};
-            });
-        })
-    }
+    const editPageLink = (languageLinkUpdate: Partial<LanguageLinkInFirestore> & { pageId: number }) =>
+        setNewPageLinks(prevState =>
+            prevState.map(link => languageLinkUpdate.pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
+        )
 
-    if (pageLinks.loading || !newPageLinks) {
+    if (pageLinks.loading) {
         return <div>Loading...</div>;
     }
-
 
     return (
         <AppWrapper>
             {JSON.stringify(newPageLinks)}
-            <PageSelect disabled defaultValuePageId={pageId} />
+            <PageSelect disabled defaultValuePageId={pageId.toString()}/>
             <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
-                onChange={languageCode => editPageLink({languageISO2: languageCode, pageId: parseInt(pageId)})} />
+                            onChange={languageCode => editPageLink({languageISO2: languageCode, pageId})}/>
 
 
         </AppWrapper>
