@@ -4,6 +4,7 @@ import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
 import {PageSelect} from "shared/PageSelect";
 import {LanguageSelect} from "shared/LanguageSelect";
+import { LanguageOverview } from "./LanguageOverview";
 
 function App() {
 
@@ -22,8 +23,7 @@ function App() {
             <Headline>
                 Proof of concept
             </Headline>
-            <PageSelect disabledPageIds={["341573633"]} defaultValuePageId={"341573633"} onChange={pageId => console.log(pageId)}/>
-            <LanguageSelect defaultValue={"fr"} onChange={lng => console.log(lng)}/>
+            <LanguageOverview/>
             <Actions>
                 <Button onClick={openModal} appearance="subtle">Open modal</Button>
             </Actions>
