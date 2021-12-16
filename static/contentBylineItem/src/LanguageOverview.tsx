@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {AtlassianContext} from "shared/AtlassianContext";
-import {useAsync, useAsyncFn} from "react-use";
+import {useAsync} from "react-use";
 import {getLinks} from "shared/api";
 import LoadingButton from '@atlaskit/button/loading-button';
 import {VALID_LANGUAGES} from "./valid-languages";
