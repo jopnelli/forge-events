@@ -11,7 +11,7 @@ import TrashIcon from '@atlaskit/icon/glyph/trash';
 import UndoIcon from '@atlaskit/icon/glyph/undo';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import {router} from "@forge/bridge";
-import Spinner, {Size} from '@atlaskit/spinner';
+import Spinner from '@atlaskit/spinner';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 
 const MAX_LINKS = 10;
