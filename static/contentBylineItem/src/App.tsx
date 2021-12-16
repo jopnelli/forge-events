@@ -2,9 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Button from "@atlaskit/button";
 import {Modal} from '@forge/bridge';
-import {PageSelect} from "shared/PageSelect";
-import {LanguageSelect} from "shared/LanguageSelect";
-import { LanguageOverview } from "./LanguageOverview";
+import {LanguageOverview} from "./LanguageOverview";
 
 function App() {
 
@@ -23,7 +21,7 @@ function App() {
             <Headline>
                 Available languages
             </Headline>
-            <LanguageOverview/>
+            <LanguageOverview />
             <Actions>
                 <Button onClick={openModal} appearance="subtle">Open modal</Button>
             </Actions>
