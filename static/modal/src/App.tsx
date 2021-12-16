@@ -45,7 +45,7 @@ function App() {
                 pageId: link.pageId
             })) as LinkRequestItem[];
         await createLinks(linkRequest);
-        await fetch();
+        await view.close({canceled: false})
     }, [newPageLinks])
 
     const updatePageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) =>
