@@ -10,9 +10,10 @@ import {LinkRequestItem} from "shared-types/types";
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 import UndoIcon from '@atlaskit/icon/glyph/undo';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
-import {router} from "@forge/bridge";
+import {router, view} from "@forge/bridge";
 import Spinner, {Size} from '@atlaskit/spinner';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
+import InlineMessage from "@atlaskit/inline-message";
 
 const MAX_LINKS = 10;
 
@@ -90,10 +91,18 @@ function App() {
         }
     }
 
+    const isLanguageDuplicates = useMemo(() => {
+        return selectedLanguageCodes.length > new Set(selectedLanguageCodes).size
+    }, [selectedLanguageCodes]);
+
     const isAddingLinkAllowed = useMemo(() => {
         const lastLink = [...newPageLinks].pop();
         return lastLink && lastLink.languageISO2 && lastLink.pageId && newPageLinks.length < MAX_LINKS && !pageSelectionState.loading
     }, [newPageLinks, pageSelectionState]);
+
+    const isSavingAllowed = useMemo(() => {
+        return !isLanguageDuplicates
+    }, [isLanguageDuplicates])
 
     if (pageLinks.loading) {
         return <div>Loading...</div>;
@@ -113,6 +122,7 @@ function App() {
                 <Row>
                     <PageSelect disabled defaultValuePageId={currentPageId.toString()}/>
                     <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
+                                    disabledLanguageCodes={selectedLanguageCodes}
                                     onChange={languageCode => updatePageLink(currentPageId, {
                                         languageISO2: languageCode,
                                         pageId: currentPageId
@@ -147,17 +157,35 @@ function App() {
                     </Row>)
                 }
                 {pageSelectionState.loading &&
-                <span>Resolving<Spinner size="small"/></span>
+                <PageResolverLoader>
+                    <Spinner size="small"/>
+                </PageResolverLoader>
                 }
-                <Button iconBefore={<EditorAddIcon label="add"/>} className="grid-1" onClick={addEmptyEditPageLink}
-                        isDisabled={!isAddingLinkAllowed}>Add link</Button>
+                <LinkControls>
+                    <Button iconBefore={<EditorAddIcon label="add"/>} className="grid-1" onClick={addEmptyEditPageLink}
+                            isDisabled={!isAddingLinkAllowed}>Add link</Button>
+                    {isLanguageDuplicates && <InlineMessage
+                        type="warning"
+                        secondaryText="Please remove duplicated languages from you configuration"
+                    >
+                        <p>
+                            <strong>Language used more than once</strong>
+                        </p>
+                        <p>
+                            No can not use a language more than once. Please review your configuration, change the
+                            language
+                            association or remove invalid links.
+                        </p>
+                    </InlineMessage>}
+                </LinkControls>
             </Configuration>
             <Footer>
                 <Controls>
-                    <LoadingButton className="grid-1" appearance={"primary"} onClick={save}
+                    <LoadingButton className="grid-1" appearance={"primary"} isDisabled={!isSavingAllowed}
+                                   onClick={save}
                                    isLoading={saveState.loading}>Save</LoadingButton>
-                    <Button className="grid-2" appearance="link" onClick={addEmptyEditPageLink}
-                            isDisabled={!isAddingLinkAllowed}>Cancel</Button>
+                    <Button className="grid-2" appearance="link"
+                            onClick={() => view.close({canceled: true})}>Cancel</Button>
                 </Controls>
             </Footer>
         </AppWrapper>
@@ -179,6 +207,13 @@ const Configuration = styled.div`
 const Header = styled.div`
   border-bottom: 2px solid #EBECF0;
   padding: 1rem;
+`
+
+const LinkControls = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `
 
 const Footer = styled.div`
@@ -213,7 +248,14 @@ const Description = styled.p`
   padding: 1rem 0;
 `
 
-const Row = styled.div<{first?: boolean, borders?: boolean}>`
+const PageResolverLoader = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+`
+
+const Row = styled.div<{ first?: boolean, borders?: boolean }>`
   display: grid;
   gap: 0.5rem;
   grid-template-columns: 330px auto 40px 40px;
