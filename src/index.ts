@@ -19,7 +19,7 @@ resolver.define("getLinks", async (req) => {
     // TODO: page permission check as extension.content.id could be forged
     const links = await getLinks(req.payload.pageId || context.extension.content.id);
     const pageIds = links.map(link => link.pageId);
-    const response = await asApp().requestConfluence(route`/rest/api/search?cql=type=page and id in (${pageIds.join(",")})`);
+    const response = await asApp().requestConfluence(route`/rest/api/search?cql=id in (${pageIds.join(",")})`);
     const searchResults: CqlSearchResult = await response.json();
     return links.map(link => {
         const searchResult = searchResults.results.find(result => result.content.id === link.pageId.toString());
@@ -27,7 +27,7 @@ resolver.define("getLinks", async (req) => {
             return link;
         }
         const searchResultUrl = searchResults._links.context + searchResult.url;
-        return {...link, url: searchResultUrl};
+        return {...link, url: searchResultUrl, base: searchResults._links.base};
     });
 });
 

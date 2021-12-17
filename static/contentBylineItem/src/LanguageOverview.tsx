@@ -32,9 +32,9 @@ export function LanguageOverview() {
                 If this error persists please contact your administrator.
             </p>
             <p>
-                {pageLinksState.error.message}
-                {pageLinksState.error.name}
-            </p></>
+                ({pageLinksState.error.name}) {pageLinksState.error.message}
+            </p>
+        </>
     }
 
     const openModal = () => {
@@ -83,6 +83,7 @@ export function LanguageOverview() {
             {pageLinksState.value?.filter(pageLink => pageLink.pageId !== currentPageId).map(pageLink =>
                 <LanguageButton language={pageLink.languageISO2}
                                 url={pageLink.url}
+                                base={pageLink.base}
                                 key={pageLink.pageId}/>)}
         </Languages>
         <Actions>
@@ -142,24 +143,29 @@ const Headline = styled.h1`
 interface LanguageButtonProps {
     language: string
     url?: string
+    base?: string
     isDisabled?: boolean
     postFix?: string
 }
 
 function LanguageButton(
     {
-        language, url, isDisabled, postFix
+        language, url, isDisabled, postFix, base
     }
         : LanguageButtonProps) {
-    return <ButtonWrapper>
-        <LoadingButton shouldFitContainer onClick={() => url && router.open(url)}
-                       isDisabled={isDisabled}>
-            {VALID_LANGUAGES[language]}{postFix}
-        </LoadingButton>
+    return <ButtonWrapper href={base && (base.replace("/wiki", "") + url)}>
+            <LoadingButton shouldFitContainer onClick={() => url && router.navigate(url)}
+                           isDisabled={isDisabled}>
+                {VALID_LANGUAGES[language]}{postFix}
+            </LoadingButton>
     </ButtonWrapper>
 }
 
-const ButtonWrapper = styled.div`padding-bottom: 0.5rem;`
+const ButtonWrapper = styled.a`
+  padding-bottom: 0.5rem;
+  text-decoration: none !important;
+  display: block;
+`
 
 const OverviewLoader = (props: IContentLoaderProps) => (
     <ContentLoader

@@ -51,7 +51,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
         }
     }, [defaultValuePageId]);
     const search = async (searchTerm: string) => {
-        const response = await requestConfluence(`/rest/api/search?cql=type=page and title~"${searchTerm}"`);
+        const response = await requestConfluence(`/rest/api/search?cql=title~"${searchTerm}"`);
         if (!response.ok) {
             return [];
         }
