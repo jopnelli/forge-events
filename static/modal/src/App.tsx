@@ -173,6 +173,16 @@ function App() {
                         </p>
                     </InlineMessage>}
                 </LinkControls>
+                {saveState.error && <SaveError><InlineMessage
+                    type="warning"
+                    secondaryText="Saving language links failed">
+                    <p>
+                        <strong>Please review your configuration</strong>
+                    </p>
+                    <p>
+                        ({saveState.error.name}) {saveState.error.message}
+                    </p>
+                </InlineMessage></SaveError>}
             </Configuration>
             <Footer>
                 <Controls>
@@ -199,9 +209,18 @@ const Configuration = styled.div`
 `
 
 
+const SaveError = styled.div`
+    padding-top: 1rem;
+`
+
 const Header = styled.div`
   border-bottom: 2px solid #EBECF0;
   padding: 1rem;
+  background-image: url("./globe.png");
+  background-repeat: no-repeat;
+  background-position-y: 8px;
+  background-position-x: calc(100% - 16px);
+  background-size: 50px;
 `
 
 const LinkControls = styled.div`
@@ -237,17 +256,13 @@ const Headline = styled.h1`
   line-height: 1.5;
   letter-spacing: -.008em;
   text-transform: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `
 
 const Description = styled.p`
   padding: 1rem 0;
-`
-
-const PageResolverLoader = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
 `
 
 const Row = styled.div<{ first?: boolean, borders?: boolean }>`

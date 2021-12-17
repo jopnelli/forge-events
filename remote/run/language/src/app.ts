@@ -19,7 +19,7 @@ router.put("/", assertSchema(linkRequestItemSchemas), async ctx => {
 
 router.get("/page/:pageId", async ctx => {
     const {authenticatedParentDoc} = ctx;
-    const {pageId} = ctx.params
+    const {pageId} = ctx.params;
     const pageIdAsNumber: number = Number(pageId);
     (Number.isNaN(pageIdAsNumber) || pageIdAsNumber === 0) && ctx.throw(400, "Bad pageId");
     const persistence = languageLinkPersistence({authenticatedParentDoc});
