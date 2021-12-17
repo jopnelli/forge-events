@@ -153,7 +153,7 @@ function LanguageButton(
         language, url, isDisabled, postFix, base
     }
         : LanguageButtonProps) {
-    return <ButtonWrapper href={base && (base.replace("/wiki", "") + url)}>
+    return <ButtonWrapper onClick={e => e.preventDefault()} href={base && (base.replace("/wiki", "") + url)}>
             <LoadingButton shouldFitContainer onClick={() => url && router.navigate(url)}
                            isDisabled={isDisabled}>
                 {VALID_LANGUAGES[language]}{postFix}

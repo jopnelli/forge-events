@@ -10,12 +10,16 @@ modules:
       resource: cbi-res
       resolver:
         function: resolver
-      title: a-new-forge-app
-      tooltip: Lorem ipsum
-      description: Some description
+      title: Languages
+      tooltip: Show different languages for this content
+      description: Show different languages for this content
+      dynamicProperties:
+        function: bylineproperties
   function:
     - key: resolver
       handler: index.handler
+    - key: bylineproperties
+      handler: index.bylineproperties
 resources:
   - key: sps-res
     path: static/spaceSettings/build

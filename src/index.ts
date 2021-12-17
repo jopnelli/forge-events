@@ -6,6 +6,7 @@ import {assertSchema} from "./validation";
 import {ForgePageInvocationContext} from "./types";
 import {asApp, route} from "@forge/api";
 import {CqlSearchResult} from "../types/atlassian-types";
+import {VALID_LANGUAGES} from "../types/valid-languages";
 
 const resolver = new Resolver();
 
@@ -32,3 +33,20 @@ resolver.define("getLinks", async (req) => {
 });
 
 export const handler = resolver.getDefinitions(); // exports backend function
+
+export const bylineproperties = async(context: any) => {
+    const id = context.extension.content.id;
+    const links = await getLinks(id);
+    const tooltip = `See different languages of this content.`;
+    let title = "Add languages";
+    if (links.length) {
+        title = VALID_LANGUAGES[links.find(link => link.pageId.toString() === id)!.languageISO2];
+        if (links.length > 1) {
+            title += ` (${links.length - 1} other language${links.length > 2 ? "s" : ""})`
+        }
+    }
+    return {
+        title,
+        tooltip
+    };
+}
