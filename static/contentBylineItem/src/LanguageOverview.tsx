@@ -21,10 +21,6 @@ export function LanguageOverview() {
         return <div>error retrieving page links</div>;
     }
 
-    if (pageLinks.value?.length === 0) {
-        return <div>no page links</div>;
-    }
-
     const openModal = () => {
         const modal = new Modal({
             resource: "modal-res",
@@ -35,24 +31,35 @@ export function LanguageOverview() {
         modal.open();
     };
 
+
+    if (pageLinks.value?.length === 0) {
+        return <>
+            <p>empty state</p>
+            <Actions>
+                <Button onClick={openModal} appearance="subtle"
+                        iconBefore={<EditorSettingsIcon label="edit"/>}>Configure</Button>
+            </Actions>
+        </>
+    }
     return <>
         <Headline>
-            {pageLinks.value?.length} available languages for this page
+            {pageLinks.value?.length} available languages for this content
         </Headline>
         <Languages>
-        {pageLinks.value?.filter(pageLink => pageLink.pageId === currentPageId).map(pageLink =>
-            <LanguageButton language={pageLink.languageISO2}
-                            url={pageLink.url}
-                            postFix=" (this page)"
-                            isDisabled
-                            key={pageLink.pageId}/>)}
-        {pageLinks.value?.filter(pageLink => pageLink.pageId !== currentPageId).map(pageLink =>
-            <LanguageButton language={pageLink.languageISO2}
-                            url={pageLink.url}
-                            key={pageLink.pageId}/>)}
+            {pageLinks.value?.filter(pageLink => pageLink.pageId === currentPageId).map(pageLink =>
+                <LanguageButton language={pageLink.languageISO2}
+                                url={pageLink.url}
+                                postFix=" (this page)"
+                                isDisabled
+                                key={pageLink.pageId}/>)}
+            {pageLinks.value?.filter(pageLink => pageLink.pageId !== currentPageId).map(pageLink =>
+                <LanguageButton language={pageLink.languageISO2}
+                                url={pageLink.url}
+                                key={pageLink.pageId}/>)}
         </Languages>
         <Actions>
-            <Button onClick={openModal} appearance="subtle" iconBefore={<EditorSettingsIcon label="edit"/>}>Configure</Button>
+            <Button onClick={openModal} appearance="subtle"
+                    iconBefore={<EditorSettingsIcon label="edit"/>}>Configure</Button>
         </Actions>
     </>;
 
@@ -82,7 +89,11 @@ interface LanguageButtonProps {
     postFix?: string
 }
 
-function LanguageButton({language, url, isDisabled, postFix}: LanguageButtonProps) {
+function LanguageButton(
+    {
+        language, url, isDisabled, postFix
+    }
+        : LanguageButtonProps) {
     return <ButtonWrapper>
         <LoadingButton shouldFitContainer onClick={() => url && router.open(url)}
                        isDisabled={isDisabled}>

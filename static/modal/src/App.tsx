@@ -11,9 +11,9 @@ import TrashIcon from '@atlaskit/icon/glyph/trash';
 import UndoIcon from '@atlaskit/icon/glyph/undo';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import {router, view} from "@forge/bridge";
-import Spinner from '@atlaskit/spinner';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import InlineMessage from "@atlaskit/inline-message";
+import ContentLoader, {IContentLoaderProps} from "react-content-loader"
 
 const MAX_LINKS = 10;
 
@@ -63,8 +63,11 @@ function App() {
         .filter(pageId => pageId)
         .map(pageId => pageId!.toString()), [newPageLinks]);
 
-    const selectedLanguageCodes = useMemo(() => newPageLinks.map(link => link.languageISO2).filter(language => language) as string[], [newPageLinks]);
+    const selectedLanguageCodes = useMemo(() => newPageLinks.filter(link => !link.removed).map(link => link.languageISO2).filter(language => language) as string[], [newPageLinks]);
     const [pageSelectionState, pageSelection] = useAsyncFn(async (oldPageId: number | null, newPageId: number) => {
+        updatePageLink(oldPageId, {
+            pageId: newPageId,
+        });
         const loadedLinks = await getLinks(newPageId);
         const loadedLinkOfSelectedPage = loadedLinks.find(link => link.pageId === newPageId);
         updatePageLink(oldPageId, {
@@ -101,12 +104,8 @@ function App() {
     }, [newPageLinks, pageSelectionState]);
 
     const isSavingAllowed = useMemo(() => {
-        return !isLanguageDuplicates
-    }, [isLanguageDuplicates])
-
-    if (pageLinks.loading) {
-        return <div>Loading...</div>;
-    }
+        return !isLanguageDuplicates && !pageLinks.loading
+    }, [isLanguageDuplicates, pageLinks])
 
     return (
         <AppWrapper>
@@ -119,20 +118,22 @@ function App() {
                 <Caption>
                     Current page
                 </Caption>
-                <Row>
-                    <PageSelect disabled defaultValuePageId={currentPageId.toString()}/>
-                    <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
-                                    disabledLanguageCodes={selectedLanguageCodes}
-                                    onChange={languageCode => updatePageLink(currentPageId, {
-                                        languageISO2: languageCode,
-                                        pageId: currentPageId
-                                    })}/>
-                </Row>
+
+                {!pageLinks.loading ?
+                    <Row>
+                        <PageSelect disabled defaultValuePageId={currentPageId.toString()}/>
+                        <LanguageSelect defaultValue={currentPageLanguageLink?.languageISO2}
+                                        disabledLanguageCodes={selectedLanguageCodes}
+                                        onChange={languageCode => updatePageLink(currentPageId, {
+                                            languageISO2: languageCode,
+                                            pageId: currentPageId
+                                        })}/>
+                    </Row> : <RowLoader/>}
                 <Caption>
                     Linked pages
                 </Caption>
-                {
-                    newPageLinks.filter(link => link.pageId !== currentPageId).map((link, index) => <Row
+                {!pageLinks.loading ? newPageLinks.filter(link => link.pageId !== currentPageId).map((link, index) =>
+                    <Row
                         borders
                         first={index === 0}
                         key={link.pageId}>
@@ -145,6 +146,7 @@ function App() {
                         <LanguageSelect defaultValue={link.languageISO2}
                                         disabledLanguageCodes={selectedLanguageCodes}
                                         disabled={link.removed}
+                                        busy={([...newPageLinks].pop()?.pageId === link.pageId) && pageSelectionState.loading}
                                         onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
                         <Button onClick={() => link.url && router.open(link.url)}>
                             <ShortcutIcon label="external" size="small"/>
@@ -153,14 +155,7 @@ function App() {
                             {link.removed ? <UndoIcon label="undo" size="small"/> :
                                 <TrashIcon label="trash" size="small"/>}
                         </Button>
-
-                    </Row>)
-                }
-                {pageSelectionState.loading &&
-                <PageResolverLoader>
-                    <Spinner size="small"/>
-                </PageResolverLoader>
-                }
+                    </Row>) : <><RowLoader/><RowLoader/></>}
                 <LinkControls>
                     <Button iconBefore={<EditorAddIcon label="add"/>} className="grid-1" onClick={addEmptyEditPageLink}
                             isDisabled={!isAddingLinkAllowed}>Add link</Button>
@@ -272,5 +267,20 @@ const Caption = styled.div`
   text-transform: uppercase;
   padding-bottom: 0.5rem;
 `
+
+const RowLoader = (props: IContentLoaderProps) => (
+    <ContentLoader
+        speed={2}
+        width={466}
+        height={43}
+        viewBox="0 0 466 43"
+        backgroundColor="#f3f3f3"
+        foregroundColor="#ecebeb"
+        {...props}
+    >
+        <rect x="1" y="1" rx="3" ry="3" width="330" height="32"/>
+        <rect x="339" y="1" rx="0" ry="0" width="133" height="31"/>
+    </ContentLoader>
+)
 
 export default App;
