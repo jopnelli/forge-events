@@ -70,7 +70,7 @@ function App() {
         });
         const loadedLinks = await getLinks(newPageId);
         const loadedLinkOfSelectedPage = loadedLinks.find(link => link.pageId === newPageId);
-        updatePageLink(oldPageId, {
+        updatePageLink(newPageId, {
             pageId: newPageId,
             languageISO2: loadedLinkOfSelectedPage?.languageISO2,
             url: loadedLinkOfSelectedPage?.url
@@ -210,7 +210,7 @@ const Configuration = styled.div`
 
 
 const SaveError = styled.div`
-    padding-top: 1rem;
+  padding-top: 1rem;
 `
 
 const Header = styled.div`
