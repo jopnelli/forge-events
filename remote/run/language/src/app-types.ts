@@ -1,4 +1,6 @@
+import {DocumentData, DocumentReference} from '@google-cloud/firestore';
+
 export interface AppContext {
-    authenticatedParentDoc: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+    authenticatedParentDoc: DocumentReference<DocumentData>
 }
 
