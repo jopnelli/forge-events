@@ -13,7 +13,7 @@ definitions:
           - node2
         script:
           - npm install # not using npm ci to use bitbucket caches
-          - wget https://github.com/mikefarah/yq/releases/download/v4.16.2/yq_linux_amd64 -O ./yq &&\ chmod +x ./yq
+          - wget https://github.com/mikefarah/yq/releases/download/v4.16.2/yq_linux_amd64 -O ./yq
           - FORGE_ENV=prod npm run build-manifest:ci
         artifacts:
           - node_modules/**
