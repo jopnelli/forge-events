@@ -5,6 +5,7 @@
   "license": "commerical",
   "private": true,
   "devDependencies": {
+    "@alexlafroscia/yaml-merge": "^4.1.0",
     "@forge/cli": "^2.0.5",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.15",
@@ -46,8 +47,7 @@
   },
   "scripts": {
     "build": "gulp build",
-    "build-manifest": "yq eval-all '. as $item ireduce ({}; . * $item )' manifest.base.yml manifest.$FORGE_ENV.yml > manifest.yml",
-    "build-manifest:ci": "./yq eval-all '. as $item ireduce ({}; . * $item )' manifest.base.yml manifest.$FORGE_ENV.yml > manifest.yml",
+    "build-manifest": "yaml-merge manifest.base.yml manifest.$FORGE_ENV.yml > manifest.yml",
     "test": "jest",
     "test:ci": "cd ./remote/run && firebase emulators:exec 'npm run test'",
     "lint": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx ",

@@ -29,6 +29,3 @@ permissions:
     - read:confluence-user
     - search:confluence
     - read:confluence-content.summary
-  content:
-    styles:
-      - unsafe-inline

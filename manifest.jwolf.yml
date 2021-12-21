@@ -7,5 +7,7 @@ permissions:
   content:
     scripts:
       - unsafe-inline
+    styles:
+      - unsafe-inline
 app:
   id: ari:cloud:ecosystem::app/54694889-3bf5-450b-924c-0db3a94028e4
