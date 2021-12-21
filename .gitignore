@@ -49,3 +49,5 @@ Thumbs.db
 
 test-reports/
 loophole
+# build with: FORGE_ENV=jwolf npm run build-manifest
+manifest.yml

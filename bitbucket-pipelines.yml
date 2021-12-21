@@ -13,11 +13,14 @@ definitions:
           - node2
         script:
           - npm install # not using npm ci to use bitbucket caches
+          - wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\ tar xz && mv ${BINARY} /usr/bin/yq
+          - FORGE_ENV=prod npm run build-manifest
         artifacts:
           - node_modules/**
           - static/node_modules/**
           - static/**/node_modules/**
           - remote/run/language/node_modules/**
+          - manifest.yml
     - parallel: &app-build
         - step:
             name: Lint

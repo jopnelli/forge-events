@@ -46,6 +46,7 @@
   },
   "scripts": {
     "build": "gulp build",
+    "build-manifest": "yq eval-all '. as $item ireduce ({}; . * $item )' manifest.base.yml manifest.$FORGE_ENV.yml > manifest.yml",
     "test": "jest",
     "test:ci": "cd ./remote/run && firebase emulators:exec 'npm run test'",
     "lint": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx ",
