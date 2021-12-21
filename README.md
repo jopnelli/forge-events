@@ -18,7 +18,6 @@ Depending on which UI you are currently developing one of these is sufficient
 ```shell 
 cd static/contentBylineItem/ && npm run start
 cd static/modal/ && npm run start
-cd static/spaceSettings/ && npm run start
 ```
 ### Firestore emulator
 ```

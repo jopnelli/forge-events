@@ -1,10 +1,4 @@
 modules:
-  confluence:spaceSettings:
-    - key: a-new-forge-app-confluence-space-settings
-      resource: sps-res
-      resolver:
-        function: resolver
-      title: a-new-forge-app
   confluence:contentBylineItem:
     - key: a-new-forge-app-content-byline-item
       resource: cbi-res
@@ -21,10 +15,6 @@ modules:
     - key: bylineproperties
       handler: index.bylineproperties
 resources:
-  - key: sps-res
-    path: static/spaceSettings/build
-    tunnel:
-      port: 3000
   - key: cbi-res
     path: static/contentBylineItem/build
     tunnel:

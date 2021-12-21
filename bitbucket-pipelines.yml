@@ -35,7 +35,6 @@ definitions:
               - npm run build
             artifacts:
               - static/contentBylineItem/build/**
-              - static/spaceSettings/build/**
               - static/modal/build/**
 pipelines:
   default:
