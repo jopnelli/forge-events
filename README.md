@@ -1,7 +1,26 @@
 # Language Manager Cloud
+## Your own manifest.yml
+This project is using a dynamic manifest.yml.  This way every developer can use his own appId which is necessary due to current Forge limitations (missing multi-ownership of apps). The effective manifest is a result of a merge of a manifest.somedevsname.yml and the manifest.base.yml. 
+You can build the manifest.yml (which is .gitignored) by adding your own manifest.somedevsname.yaml to the root dir:
+
+1. run ```forge create``` in some other directory, create an app
+2. obtain your new appId from the newly created manifest.yml. You can then delete the newly created directory.
+3. copy manifest.jwolf.yml and create your own manifest.somedevsname.yaml – replace the appId
+4. You are ready! Execute the following command and a manifest.yml will be created:
+
+```
+FORGE_ENV=somedevsname npm run build-manifest
+```
 
 ## Dev mode
-To run a local development set-up start multiple processes:
+To run a local development set-up you have to start multiple processes. This can be automated by using ttab.
+
+### Auto start
+You can automate the processes below by choosing a custom subdomain (replace that with yourcustomdevmode) and running the following command:
+```
+node dev.js --host yourcustomdevmode
+```
+### Manual Start (all processes below)
 ### Loophole proxy
 Download loophole from here https://loophole.site/ and login before usage. Replace "yourdevname" with sth. unique.
 ```
@@ -27,10 +46,4 @@ firebase emulators:start
 ### Cloud Run Backend
 ```
 cd remote/run/language/ && npm run serve 
-```
-
-#### Auto-start dev mode
-You can automate the processes above by:
-```
-node dev.js --host yourcustomdevmode
 ```
