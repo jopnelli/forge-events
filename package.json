@@ -5,17 +5,29 @@
   "license": "commerical",
   "private": true,
   "devDependencies": {
+    "@alexlafroscia/yaml-merge": "^4.1.0",
     "@forge/cli": "^2.0.5",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.15",
+    "@types/supertest": "^2.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "babel-jest": "^27.4.0",
-    "eslint": "^6.5.1",
-    "eslint-plugin-react-hooks": "^2.1.2",
+    "eslint": "^8.5.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "gulp": "^4.0.2",
     "gulp-shell": "^0.8.0",
     "jest": "^27.3.1",
     "jest-junit": "^13.0.0",
+    "kill-port": "^1.6.1",
+    "minimist": "^1.2.5",
+    "supertest": "^6.1.6",
     "ts-jest": "^27.0.7",
+    "ttab": "^0.7.2",
     "typescript": "^4.3.5"
   },
   "dependencies": {
@@ -35,9 +47,13 @@
   },
   "scripts": {
     "build": "gulp build",
+    "build-manifest": "yaml-merge manifest.base.yml manifest.$FORGE_ENV.yml > manifest.yml",
     "test": "jest",
-    "lint": "echo not implemented",
-    "postinstall": "(cd static && npm install); (cd static/spaceSettings && npm install); (cd static/contentBylineItem && npm install); (cd static/modal && npm install);",
-    "remove-all-node-modules": "(rm -rf ./node_modules); (cd static && rm -rf ./node_modules); (cd static/spaceSettings && rm -rf ./node_modules); (cd static/contentBylineItem && rm -rf ./node_modules);  (cd static/modal && rm -rf ./node_modules);"
+    "test:ci": "cd ./remote/run && firebase emulators:exec 'npm run test'",
+    "lint": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx ",
+    "lint:fix": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx --fix",
+    "forge:tunnel": "node tunnel-check.js; FORGE_USER_VAR_DATABASE_TOKEN=localdev:x forge tunnel",
+    "postinstall": "(cd static && npm install); (cd static/contentBylineItem && npm install); (cd static/modal && npm install); (cd remote/run/language && npm install);",
+    "remove-all-node-modules": "(rm -rf ./node_modules); (cd static && rm -rf ./node_modules); (cd static/contentBylineItem && rm -rf ./node_modules);  (cd static/modal && rm -rf ./node_modules); (cd remote/run && rm -rf ./node_modules);"
   }
 }

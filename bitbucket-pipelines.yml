@@ -1,4 +1,4 @@
-image: node:16
+image: andreysenov/firebase-tools
 
 definitions:
   # prevents node_modules downloads for every build
@@ -13,10 +13,13 @@ definitions:
           - node2
         script:
           - npm install # not using npm ci to use bitbucket caches
+          - FORGE_ENV=prod npm run build-manifest
         artifacts:
           - node_modules/**
           - static/node_modules/**
           - static/**/node_modules/**
+          - remote/run/language/node_modules/**
+          - manifest.yml
     - parallel: &app-build
         - step:
             name: Lint
@@ -25,7 +28,7 @@ definitions:
         - step:
             name: Test
             script:
-              - npm run test
+              - npm run test:ci
             artifacts:
               - test-reports/junit.xml
         - step:
@@ -34,7 +37,6 @@ definitions:
               - npm run build
             artifacts:
               - static/contentBylineItem/build/**
-              - static/spaceSettings/build/**
               - static/modal/build/**
 pipelines:
   default:
