@@ -66,7 +66,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
               disabled={disabled}
             />,
             value: result.content.id,
-            page: result as ConfluencePageSearchResult
+            page: result as ConfluencePageSearchResult,
           };
         });
   };
