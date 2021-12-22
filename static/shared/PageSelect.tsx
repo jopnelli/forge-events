@@ -6,12 +6,12 @@ import {useAsync} from 'react-use';
 import {SkeletonItem} from '@atlaskit/menu';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import QuestionIcon from '@atlaskit/icon/glyph/question';
-import {CqlSearchResult, PageFromContentAPI} from '../../types/atlassian-types';
+import {ConfluencePageSearchResult, CqlSearchResult, PageFromContentAPI} from '../../types/atlassian-types';
 
 interface Props {
     disabledPageIds?: string[],
     defaultValuePageId?: string,
-    onChange?: (pageId: string) => unknown,
+    onChange?: (pageId: ConfluencePageSearchResult) => unknown,
     disabled?: boolean
 }
 
@@ -66,6 +66,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
               disabled={disabled}
             />,
             value: result.content.id,
+            page: result as ConfluencePageSearchResult
           };
         });
   };
@@ -86,7 +87,9 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
     loadOptions={search}
     defaultValue={defaultValuePageId && preselectedPage.value}
     defaultOptions
-    onChange={(change) => onChange && onChange((change as { value: string, label: ReactElement }).value)}
+    onChange={(change) => {
+      return onChange && onChange((change as { value: string, page: ConfluencePageSearchResult, label: ReactElement }).page);
+    }}
     inputId="page-select"
     spacing="compact"
     placeholder="Select a page..."

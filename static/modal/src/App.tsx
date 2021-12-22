@@ -14,6 +14,7 @@ import {router, view} from "@forge/bridge";
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import InlineMessage from "@atlaskit/inline-message";
 import ContentLoader, {IContentLoaderProps} from "react-content-loader"
+import {ConfluencePageSearchResult} from "shared-types/atlassian-types";
 
 const MAX_LINKS = 10;
 
@@ -48,10 +49,13 @@ function App() {
         await view.close({canceled: false})
     }, [newPageLinks])
 
-    const updatePageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) =>
+    const updatePageLink = (pageId: number | null, languageLinkUpdate: Partial<LinkRequestItemEditState>) => {
+        // drop undefined types from update
+        (Object.keys(languageLinkUpdate) as (keyof LinkRequestItemEditState)[]).forEach(key => languageLinkUpdate[key] === undefined ? delete languageLinkUpdate[key] : {});
         setNewPageLinks(prevState =>
             prevState.map(link => pageId !== link.pageId ? link : {...link, ...languageLinkUpdate})
-        )
+        );
+    }
 
     const addEmptyEditPageLink = () => setNewPageLinks(prevState => [...prevState, {pageId: null, languageISO2: null}]);
     const addEditPageLinks = (links: LinkRequestItemEditState[]) => {
@@ -64,9 +68,11 @@ function App() {
         .map(pageId => pageId!.toString()), [newPageLinks]);
 
     const selectedLanguageCodes = useMemo(() => newPageLinks.filter(link => !link.removed).map(link => link.languageISO2).filter(language => language) as string[], [newPageLinks]);
-    const [pageSelectionState, pageSelection] = useAsyncFn(async (oldPageId: number | null, newPageId: number) => {
+    const [pageSelectionState, pageSelection] = useAsyncFn(async (oldPageId: number | null, newPage: ConfluencePageSearchResult) => {
+        const newPageId = parseInt(newPage.content.id);
         updatePageLink(oldPageId, {
             pageId: newPageId,
+            url: newPage.content._links.webui
         });
         const loadedLinks = await getLinks(newPageId);
         const loadedLinkOfSelectedPage = loadedLinks.find(link => link.pageId === newPageId);
@@ -104,8 +110,8 @@ function App() {
     }, [newPageLinks, pageSelectionState]);
 
     const isSavingAllowed = useMemo(() => {
-        return !isLanguageDuplicates && !pageLinks.loading
-    }, [isLanguageDuplicates, pageLinks])
+        return !isLanguageDuplicates && !pageLinks.loading && newPageLinks.every(link => link.pageId && link.languageISO2)
+    }, [isLanguageDuplicates, pageLinks, newPageLinks])
 
     return (
         <AppWrapper>
@@ -141,14 +147,14 @@ function App() {
                             defaultValuePageId={link.pageId?.toString()}
                             disabledPageIds={selectedPageIds}
                             disabled={link.removed}
-                            onChange={pageId => pageSelection(link.pageId, parseInt(pageId))}
+                            onChange={page => pageSelection(link.pageId, page)}
                         />
                         <LanguageSelect defaultValue={link.languageISO2}
                                         disabledLanguageCodes={selectedLanguageCodes}
                                         disabled={link.removed}
                                         busy={([...newPageLinks].pop()?.pageId === link.pageId) && pageSelectionState.loading}
                                         onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
-                        <Button onClick={() => link.url && router.open(link.url)}>
+                        <Button onClick={() => link.url && router.open("/wiki" + link.url)}>
                             <ShortcutIcon label="external" size="small"/>
                         </Button>
                         <Button onClick={() => onLinkRemove(link.pageId, !link.removed)}>
@@ -216,11 +222,6 @@ const SaveError = styled.div`
 const Header = styled.div`
   border-bottom: 2px solid #EBECF0;
   padding: 1rem;
-  background-image: url("./globe.png");
-  background-repeat: no-repeat;
-  background-position-y: 8px;
-  background-position-x: calc(100% - 16px);
-  background-size: 50px;
 `
 
 const LinkControls = styled.div`

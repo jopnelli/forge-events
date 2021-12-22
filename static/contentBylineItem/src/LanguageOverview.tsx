@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsyncFn} from "react-use";
 import {getLinks} from "shared/api";
@@ -19,10 +19,28 @@ export function LanguageOverview() {
         fetch()
     }, [fetch]);
 
+    const openModal = useCallback(() => {
+        const modal = new Modal({
+            resource: "modal-res",
+            context: {}, // will be passed to modal
+            async onClose({canceled}) {
+                !canceled && fetch();
+            },
+        });
+        modal.open();
+    }, [fetch]);
+
+    useEffect(() => {
+        if (!pageLinksState.loading && pageLinksState.value?.length === 0) {
+            openModal();
+        }
+    }, [openModal, pageLinksState]);
+
+
     if (pageLinksState.loading) {
         return <OverviewLoader/>;
-    }
 
+    }
     if (pageLinksState.error) {
         return <>
             <p>
@@ -35,19 +53,8 @@ export function LanguageOverview() {
                 ({pageLinksState.error.name}) {pageLinksState.error.message}
             </p>
         </>
+
     }
-
-    const openModal = () => {
-        const modal = new Modal({
-            resource: "modal-res",
-            context: {}, // will be passed to modal
-            async onClose({canceled}) {
-                !canceled && fetch();
-            },
-        });
-        modal.open();
-    };
-
 
     if (pageLinksState.value?.length === 0) {
         return <EmptyState>
@@ -58,7 +65,6 @@ export function LanguageOverview() {
             <span>Add languages by clicking the globe!</span>
         </EmptyState>
     }
-
 
     if (pageLinksState.value?.length === 1) {
         return <EmptyState>
@@ -150,11 +156,11 @@ interface LanguageButtonProps {
 
 function LanguageButton(
     {
-        language, url, isDisabled, postFix, base
+        language, url, isDisabled, postFix
     }
         : LanguageButtonProps) {
-    return <ButtonWrapper onClick={e => e.preventDefault()} href={base && (base.replace("/wiki", "") + url)}>
-            <LoadingButton shouldFitContainer onClick={() => url && router.navigate(url)}
+    return <ButtonWrapper onClick={e => e.preventDefault()} href={url}>
+            <LoadingButton shouldFitContainer onClick={() => url && router.navigate("/wiki" + url)}
                            isDisabled={isDisabled}>
                 {VALID_LANGUAGES[language]}{postFix}
             </LoadingButton>

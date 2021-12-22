@@ -15,6 +15,9 @@ interface CqlSearchResultLinks {
     self: string;
 }
 
+type Unarray<T> = T extends Array<infer U> ? U : T;
+export type ConfluencePageSearchResult = Unarray<Result>
+
 interface Result {
     content: Content;
     title: string;
