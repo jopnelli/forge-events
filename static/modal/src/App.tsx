@@ -6,6 +6,7 @@ import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsyncFn} from "react-use";
 import {createLinks, getLinks} from "shared/api";
 import Button, {LoadingButton} from "@atlaskit/button";
+import Tooltip from '@atlaskit/tooltip';
 import {LinkRequestItem} from "shared-types/types";
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 import UndoIcon from '@atlaskit/icon/glyph/undo';
@@ -153,13 +154,17 @@ function App() {
                                         disabled={link.removed}
                                         busy={([...newPageLinks].pop()?.pageId === link.pageId) && pageSelectionState.loading}
                                         onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
-                        <Button onClick={() => link.url && router.open("/wiki" + link.url)}>
-                            <ShortcutIcon label="external" size="small"/>
-                        </Button>
-                        <Button onClick={() => onLinkRemove(link.pageId, !link.removed)}>
-                            {link.removed ? <UndoIcon label="undo" size="small"/> :
-                                <TrashIcon label="trash" size="small"/>}
-                        </Button>
+                        <Tooltip content="Preview linked page">
+                            <Button onClick={() => link.url && router.open("/wiki" + link.url)}>
+                                <ShortcutIcon label="external" size="small"/>
+                            </Button>
+                        </Tooltip>
+                        <Tooltip content="Remove link to page">
+                            <Button onClick={() => onLinkRemove(link.pageId, !link.removed)}>
+                                {link.removed ? <UndoIcon label="undo" size="small"/> :
+                                    <TrashIcon label="trash" size="small"/>}
+                            </Button>
+                        </Tooltip>
                     </Row>) : <><RowLoader/><RowLoader/></>}
                 <LinkControls>
                     <Button iconBefore={<EditorAddIcon label="add"/>} className="grid-1" onClick={addEmptyEditPageLink}
