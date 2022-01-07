@@ -39,7 +39,6 @@ export function LanguageOverview() {
 
     if (pageLinksState.loading) {
         return <OverviewLoader/>;
-
     }
     if (pageLinksState.error) {
         return <>
@@ -58,27 +57,18 @@ export function LanguageOverview() {
 
     if (pageLinksState.value?.length === 0) {
         return <EmptyState>
-            <Headline>
-                No language linked
-            </Headline>
-            <div onClick={openModal} className="globe"/>
-            <span>Add languages by clicking the globe!</span>
+            <p>Connect several pages with similar content and different languages to easily switch between them.</p>
+            <Button onClick={openModal}>Add languages</Button>
         </EmptyState>
     }
 
     if (pageLinksState.value?.length === 1) {
         return <EmptyState>
-            <Headline>
-                This content is ⪢{VALID_LANGUAGES[pageLinksState.value![0].languageISO2]}«
-            </Headline>
-            <div onClick={openModal} className="globe"/>
-            <span>Add further languages by clicking the globe!</span>
+            <div>DESC STATE 2</div>
+            <Button onClick={openModal}>Add further languages</Button>
         </EmptyState>
     }
     return <>
-        <Headline>
-            {pageLinksState.value?.length} available languages for this content
-        </Headline>
         <Languages>
             {pageLinksState.value?.filter(pageLink => pageLink.pageId === currentPageId).map(pageLink =>
                 <LanguageButton language={pageLink.languageISO2}
@@ -102,11 +92,11 @@ export function LanguageOverview() {
 
 
 const EmptyState = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-
+  
+  & button {
+    width: 100%;
+  }
+   
   & h1 {
     width: 100%;
     text-align: left;
@@ -124,11 +114,6 @@ const EmptyState = styled.div`
     background-position: center;
     background-repeat: no-repeat;
   }
-
-  & span {
-    margin-top: 1rem;
-    text-align: center;
-  }
 `
 const Actions = styled.div`
   position: absolute;
@@ -140,10 +125,10 @@ const Languages = styled.div`
   padding-bottom: 1.5rem;
 `
 
-const Headline = styled.h1`
+const Headline = styled.h1<{borderless?:boolean}>`
   font-size: 12px;
   text-transform: uppercase;
-  padding-bottom: 1rem;
+  padding-bottom: ${props => props.borderless === true ? '0' : '1rem'};
 `
 
 interface LanguageButtonProps {
@@ -183,10 +168,10 @@ const OverviewLoader = (props: IContentLoaderProps) => (
         foregroundColor="#ecebeb"
         {...props}
     >
-        <rect x="1" y="32" rx="3" ry="3" width="288" height="32"/>
-        <rect x="180" y="159" rx="0" ry="0" width="109" height="31"/>
-        <rect x="1" y="72" rx="3" ry="3" width="288" height="32"/>
-        <rect x="1" y="113" rx="3" ry="3" width="288" height="32"/>
-        <rect x="1" y="1" rx="3" ry="3" width="273" height="12"/>
+        <rect x="0" y="0" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="40" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="80" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="120" rx="3" ry="3" width="288" height="32"/>
+        <rect x="180" y="160" rx="3" ry="3" width="109" height="32"/>
     </ContentLoader>
 )
