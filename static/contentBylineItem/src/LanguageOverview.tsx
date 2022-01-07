@@ -57,14 +57,14 @@ export function LanguageOverview() {
 
     if (pageLinksState.value?.length === 0) {
         return <EmptyState>
-            <p>Connect several pages with similar content and different languages to easily switch between them.</p>
+            <DescriptionText>Set a language for this page and connect further pages with similar content and different languages to easily switch between them.</DescriptionText>
             <Button onClick={openModal}>Add languages</Button>
         </EmptyState>
     }
 
     if (pageLinksState.value?.length === 1) {
         return <EmptyState>
-            <div>DESC STATE 2</div>
+            <DescriptionText>Connect further pages with similar content and different languages to easily switch between them.</DescriptionText>
             <Button onClick={openModal}>Add further languages</Button>
         </EmptyState>
     }
@@ -119,6 +119,10 @@ const Actions = styled.div`
   position: absolute;
   bottom: 0;
   right: 0;
+`
+const DescriptionText = styled.div`
+    padding-bottom: 1.5rem;
+    text-align: center;
 `
 
 const Languages = styled.div`
