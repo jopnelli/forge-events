@@ -16,6 +16,7 @@ import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 import InlineMessage from "@atlaskit/inline-message";
 import ContentLoader, {IContentLoaderProps} from "react-content-loader"
 import {ConfluencePageSearchResult} from "shared-types/atlassian-types";
+import {Trans, useTranslation} from 'react-i18next';
 
 const MAX_LINKS = 10;
 
@@ -32,6 +33,7 @@ function App() {
         return newPageLinks;
     })
     const currentPageLanguageLink = useMemo(() => pageLinks.value?.find(link => link.pageId === currentPageId) || null, [pageLinks, currentPageId]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetch();
@@ -117,13 +119,12 @@ function App() {
     return (
         <AppWrapper>
             <Header>
-                <Headline>Configure language links</Headline>
+                <Headline><Trans>Configure language links</Trans></Headline>
             </Header>
             <Configuration>
-                <Description>Define the language of the current page and links to existing language
-                    variants.</Description>
+                <Description><Trans>Define the language of the current page and links to existing language variants.</Trans></Description>
                 <Caption>
-                    Current page
+                    <Trans>Current page</Trans>
                 </Caption>
 
                 {!pageLinks.loading ?
@@ -137,7 +138,7 @@ function App() {
                                         })}/>
                     </Row> : <RowLoader/>}
                 <Caption>
-                    Linked pages
+                    <Trans>Linked pages</Trans>
                 </Caption>
                 {!pageLinks.loading ? newPageLinks.filter(link => link.pageId !== currentPageId).map((link, index) =>
                     <Row
@@ -154,12 +155,12 @@ function App() {
                                         disabled={link.removed}
                                         busy={([...newPageLinks].pop()?.pageId === link.pageId) && pageSelectionState.loading}
                                         onChange={languageCode => updatePageLink(link.pageId, {languageISO2: languageCode})}/>
-                        <Tooltip content="Preview linked page">
+                        <Tooltip content={t('Preview linked page')}>
                             <Button onClick={() => link.url && router.open("/wiki" + link.url)}>
                                 <ShortcutIcon label="external" size="small"/>
                             </Button>
                         </Tooltip>
-                        <Tooltip content="Remove link to page">
+                        <Tooltip content={t('Remove link to page')}>
                             <Button onClick={() => onLinkRemove(link.pageId, !link.removed)}>
                                 {link.removed ? <UndoIcon label="undo" size="small"/> :
                                     <TrashIcon label="trash" size="small"/>}
@@ -168,26 +169,24 @@ function App() {
                     </Row>) : <><RowLoader/><RowLoader/></>}
                 <LinkControls>
                     <Button iconBefore={<EditorAddIcon label="add"/>} className="grid-1" onClick={addEmptyEditPageLink}
-                            isDisabled={!isAddingLinkAllowed}>Add link</Button>
+                            isDisabled={!isAddingLinkAllowed}><Trans>Add link</Trans></Button>
                     {isLanguageDuplicates && <InlineMessage
                         type="warning"
-                        secondaryText="Please remove duplicated languages from you configuration"
+                        secondaryText={t('Please remove duplicated languages from you configuration')}
                     >
                         <p>
-                            <strong>Language used more than once</strong>
+                            <strong><Trans>Language used more than once</Trans></strong>
                         </p>
                         <p>
-                            No can not use a language more than once. Please review your configuration, change the
-                            language
-                            association or remove invalid links.
+                          <Trans>Cannot use a language more than once. Please review your configuration, change the language association or remove invalid links.</Trans>
                         </p>
                     </InlineMessage>}
                 </LinkControls>
                 {saveState.error && <SaveError><InlineMessage
                     type="warning"
-                    secondaryText="Saving language links failed">
+                    secondaryText={t('Saving language links failed')}>
                     <p>
-                        <strong>Please review your configuration</strong>
+                        <strong><Trans>Please review your configuration</Trans></strong>
                     </p>
                     <p>
                         ({saveState.error.name}) {saveState.error.message}
@@ -198,9 +197,9 @@ function App() {
                 <Controls>
                     <LoadingButton className="grid-1" appearance={"primary"} isDisabled={!isSavingAllowed}
                                    onClick={save}
-                                   isLoading={saveState.loading}>Save</LoadingButton>
+                                   isLoading={saveState.loading}><Trans>Save</Trans></LoadingButton>
                     <Button className="grid-2" appearance="link"
-                            onClick={() => view.close({canceled: true})}>Cancel</Button>
+                            onClick={() => view.close({canceled: true})}><Trans>Cancel</Trans></Button>
                 </Controls>
             </Footer>
         </AppWrapper>

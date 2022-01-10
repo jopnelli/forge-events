@@ -2,6 +2,7 @@ import React from 'react';
 import Select from '@atlaskit/select';
 import {VALID_LANGUAGES} from '../../types/valid-languages';
 import {SkeletonItem} from '@atlaskit/menu';
+import {useTranslation} from "react-i18next";
 
 interface Props {
     defaultValue?: string | null
@@ -12,6 +13,8 @@ interface Props {
 }
 
 export function LanguageSelect({onChange, defaultValue, disabled, disabledLanguageCodes = [], busy}: Props) {
+  const { t } = useTranslation();
+
   if (busy) {
     return <>
       <Select
@@ -25,7 +28,7 @@ export function LanguageSelect({onChange, defaultValue, disabled, disabledLangua
   }
   return <Select
     options={LANGUAGE_OPTIONS.filter((language) => !disabledLanguageCodes.filter((language) => defaultValue !== language).includes(language.value))}
-    placeholder="Language..."
+    placeholder={t('Language...')}
     spacing="compact"
     isDisabled={disabled}
     defaultValue={defaultValue && {value: defaultValue, label: VALID_LANGUAGES[defaultValue]}}

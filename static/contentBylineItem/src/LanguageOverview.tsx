@@ -9,11 +9,13 @@ import styled from "styled-components";
 import Button from "@atlaskit/button";
 import EditorSettingsIcon from '@atlaskit/icon/glyph/editor/settings';
 import ContentLoader, {IContentLoaderProps} from "react-content-loader";
+import {Trans, useTranslation} from 'react-i18next';
 
 export function LanguageOverview() {
     const atlassianContext = useContext(AtlassianContext);
     const currentPageId = parseInt(atlassianContext.forgeContext.extension.content.id);
     const [pageLinksState, fetch] = useAsyncFn(getLinks);
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetch()
@@ -43,10 +45,10 @@ export function LanguageOverview() {
     if (pageLinksState.error) {
         return <>
             <p>
-                <strong>Could not fetch languages</strong>
+                <strong><Trans>Could not fetch languages</Trans></strong>
             </p>
             <p>
-                If this error persists please contact your administrator.
+                <Trans>If this error persists please contact your administrator.</Trans>
             </p>
             <p>
                 ({pageLinksState.error.name}) {pageLinksState.error.message}
@@ -57,15 +59,15 @@ export function LanguageOverview() {
 
     if (pageLinksState.value?.length === 0) {
         return <EmptyState>
-            <DescriptionText>Set a language for this page and connect further pages with similar content and different languages to easily switch between them.</DescriptionText>
-            <Button onClick={openModal}>Add languages</Button>
+            <DescriptionText><Trans>Set a language for this page and connect further pages with similar content and different languages to easily switch between them.</Trans></DescriptionText>
+            <Button onClick={openModal}><Trans>Add languages</Trans></Button>
         </EmptyState>
     }
 
     if (pageLinksState.value?.length === 1) {
         return <EmptyState>
-            <DescriptionText>Connect further pages with similar content and different languages to easily switch between them.</DescriptionText>
-            <Button onClick={openModal}>Add further languages</Button>
+            <DescriptionText><Trans>Connect further pages with similar content and different languages to easily switch between them.</Trans></DescriptionText>
+            <Button onClick={openModal}><Trans>Add further languages</Trans></Button>
         </EmptyState>
     }
     return <>
@@ -73,7 +75,7 @@ export function LanguageOverview() {
             {pageLinksState.value?.filter(pageLink => pageLink.pageId === currentPageId).map(pageLink =>
                 <LanguageButton language={pageLink.languageISO2}
                                 url={pageLink.url}
-                                postFix=" (this page)"
+                                postFix={t('this page')}
                                 isDisabled
                                 key={pageLink.pageId}/>)}
             {pageLinksState.value?.filter(pageLink => pageLink.pageId !== currentPageId).map(pageLink =>
@@ -84,7 +86,7 @@ export function LanguageOverview() {
         </Languages>
         <Actions>
             <Button onClick={openModal} appearance="subtle"
-                    iconBefore={<EditorSettingsIcon label="edit"/>}>Configure</Button>
+                    iconBefore={<EditorSettingsIcon label="edit"/>}><Trans>Configure</Trans></Button>
         </Actions>
     </>;
 
