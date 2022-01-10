@@ -33,7 +33,7 @@ function App() {
         return newPageLinks;
     })
     const currentPageLanguageLink = useMemo(() => pageLinks.value?.find(link => link.pageId === currentPageId) || null, [pageLinks, currentPageId]);
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     useEffect(() => {
         fetch();

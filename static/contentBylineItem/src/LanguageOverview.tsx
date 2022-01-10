@@ -15,7 +15,7 @@ export function LanguageOverview() {
     const atlassianContext = useContext(AtlassianContext);
     const currentPageId = parseInt(atlassianContext.forgeContext.extension.content.id);
     const [pageLinksState, fetch] = useAsyncFn(getLinks);
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     useEffect(() => {
         fetch()

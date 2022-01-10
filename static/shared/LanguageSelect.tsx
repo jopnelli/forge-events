@@ -2,7 +2,7 @@ import React from 'react';
 import Select from '@atlaskit/select';
 import {VALID_LANGUAGES} from '../../types/valid-languages';
 import {SkeletonItem} from '@atlaskit/menu';
-import {useTranslation} from "react-i18next";
+import {useTranslation} from 'react-i18next';
 
 interface Props {
     defaultValue?: string | null
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function LanguageSelect({onChange, defaultValue, disabled, disabledLanguageCodes = [], busy}: Props) {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
 
   if (busy) {
     return <>
