@@ -1,6 +1,6 @@
 {
   "name": "sm-forge-start-typescript-template",
-  "version": "1.0.0",
+  "version": "1.0.1-next.0",
   "main": "index.js",
   "license": "commerical",
   "private": true,
