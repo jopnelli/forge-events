@@ -7,6 +7,7 @@ import {SkeletonItem} from '@atlaskit/menu';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import QuestionIcon from '@atlaskit/icon/glyph/question';
 import {ConfluencePageSearchResult, CqlSearchResult, PageFromContentAPI} from '../../types/atlassian-types';
+import {useTranslation} from 'react-i18next';
 
 interface Props {
     disabledPageIds?: string[],
@@ -27,6 +28,7 @@ interface Props {
  * @param disabled
  */
 export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, disabled}: Props) {
+  const {t} = useTranslation();
   const preselectedPage = useAsync(async () => {
     if (!defaultValuePageId) {
       return null;
@@ -52,7 +54,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
     };
   }, [defaultValuePageId]);
   const search = async (searchTerm: string) => {
-    const response = await requestConfluence(`/rest/api/search?cql=title~"${searchTerm}"`);
+    const response = await requestConfluence(`/rest/api/search?cql=title~"${searchTerm}*"`);
     if (!response.ok) {
       return [];
     }
@@ -92,7 +94,7 @@ export function PageSelect({disabledPageIds = [], defaultValuePageId, onChange, 
     }}
     inputId="page-select"
     spacing="compact"
-    placeholder="Select a page..."
+    placeholder={t('Select a page...')}
   />;
 }
 
