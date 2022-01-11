@@ -7,23 +7,23 @@ import translationDE from './locales/de/translation.json';
 
 // the translations
 const resources = {
-	en: {
-		translation: translationEN,
-	},
-	de: {
-		translation: translationDE,
-	}
+  en: {
+    translation: translationEN,
+  },
+  de: {
+    translation: translationDE,
+  },
 };
 
 i18n
-		.use(LanguageDetector)
-		.use(initReactI18next)
-		.init({
-			fallbackLng: 'en',
-			resources,
-			interpolation: {
-				escapeValue: false, // not needed for react as it escapes by default
-			}
-		});
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      fallbackLng: 'en',
+      resources,
+      interpolation: {
+        escapeValue: false, // not needed for react as it escapes by default
+      },
+    });
 
 export default i18n;

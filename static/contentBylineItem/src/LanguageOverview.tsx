@@ -131,12 +131,6 @@ const Languages = styled.div`
   padding-bottom: 1.5rem;
 `
 
-const Headline = styled.h1<{borderless?:boolean}>`
-  font-size: 12px;
-  text-transform: uppercase;
-  padding-bottom: ${props => props.borderless === true ? '0' : '1rem'};
-`
-
 interface LanguageButtonProps {
     language: string
     url?: string
