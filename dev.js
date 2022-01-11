@@ -8,10 +8,10 @@ if (!host) {
 const ports = [2408, 3000, 3001, 3002, 4400, 4500, 8010, 8080, 57016];
 const commands = [
     `./loophole http 8080 --hostname ${host.toLowerCase()}`,
-    `export FORGE_USER_VAR_LOOPHOLE_HOST="${host.toLowerCase()}" && npm run forge:tunnel`,
-    "cd static/contentBylineItem/ && npm run start",
-    "cd remote && firebase emulators:start --only firestore",
-    "cd remote/run/language/ && npm run serve ",
+    `export FORGE_USER_VAR_LOOPHOLE_HOST="${host.toLowerCase()}"; npm run forge:tunnel`,
+    "cd static/contentBylineItem/; npm run start",
+    "cd remote; firebase emulators:start --only firestore",
+    "cd remote/run/language; npm run serve ",
 ];
 
 const ttabBin = `${__dirname}/node_modules/ttab/bin/ttab`

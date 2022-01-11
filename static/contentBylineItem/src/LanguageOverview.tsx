@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import {AtlassianContext} from "shared/AtlassianContext";
 import {useAsyncFn} from "react-use";
 import {getLinks} from "shared/api";
@@ -9,35 +9,19 @@ import styled from "styled-components";
 import Button from "@atlaskit/button";
 import EditorSettingsIcon from '@atlaskit/icon/glyph/editor/settings';
 import ContentLoader, {IContentLoaderProps} from "react-content-loader";
+import {Trans, useTranslation} from 'react-i18next';
 
 export function LanguageOverview() {
     const atlassianContext = useContext(AtlassianContext);
     const currentPageId = parseInt(atlassianContext.forgeContext.extension.content.id);
     const [pageLinksState, fetch] = useAsyncFn(getLinks);
+    const {t} = useTranslation();
 
     useEffect(() => {
         fetch()
     }, [fetch]);
 
-    if (pageLinksState.loading) {
-        return <OverviewLoader/>;
-    }
-
-    if (pageLinksState.error) {
-        return <>
-            <p>
-                <strong>Could not fetch languages</strong>
-            </p>
-            <p>
-                If this error persists please contact your administrator.
-            </p>
-            <p>
-                ({pageLinksState.error.name}) {pageLinksState.error.message}
-            </p>
-        </>
-    }
-
-    const openModal = () => {
+    const openModal = useCallback(() => {
         const modal = new Modal({
             resource: "modal-res",
             context: {}, // will be passed to modal
@@ -46,38 +30,52 @@ export function LanguageOverview() {
             },
         });
         modal.open();
-    };
+    }, [fetch]);
 
+    useEffect(() => {
+        if (!pageLinksState.loading && pageLinksState.value?.length === 0) {
+            openModal();
+        }
+    }, [openModal, pageLinksState]);
+
+
+    if (pageLinksState.loading) {
+        return <OverviewLoader/>;
+    }
+    if (pageLinksState.error) {
+        return <>
+            <p>
+                <strong><Trans>Could not fetch languages</Trans></strong>
+            </p>
+            <p>
+                <Trans>If this error persists please contact your administrator.</Trans>
+            </p>
+            <p>
+                ({pageLinksState.error.name}) {pageLinksState.error.message}
+            </p>
+        </>
+
+    }
 
     if (pageLinksState.value?.length === 0) {
         return <EmptyState>
-            <Headline>
-                No language linked
-            </Headline>
-            <div onClick={openModal} className="globe"/>
-            <span>Add languages by clicking the globe!</span>
+            <DescriptionText><Trans>Set a language for this page and connect further pages with similar content and different languages to easily switch between them.</Trans></DescriptionText>
+            <Button onClick={openModal}><Trans>Add languages</Trans></Button>
         </EmptyState>
     }
-
 
     if (pageLinksState.value?.length === 1) {
         return <EmptyState>
-            <Headline>
-                This content is ⪢{VALID_LANGUAGES[pageLinksState.value![0].languageISO2]}«
-            </Headline>
-            <div onClick={openModal} className="globe"/>
-            <span>Add further languages by clicking the globe!</span>
+            <DescriptionText><Trans>Connect further pages with similar content and different languages to easily switch between them.</Trans></DescriptionText>
+            <Button onClick={openModal}><Trans>Add further languages</Trans></Button>
         </EmptyState>
     }
     return <>
-        <Headline>
-            {pageLinksState.value?.length} available languages for this content
-        </Headline>
         <Languages>
             {pageLinksState.value?.filter(pageLink => pageLink.pageId === currentPageId).map(pageLink =>
                 <LanguageButton language={pageLink.languageISO2}
                                 url={pageLink.url}
-                                postFix=" (this page)"
+                                postFix={t('this page')}
                                 isDisabled
                                 key={pageLink.pageId}/>)}
             {pageLinksState.value?.filter(pageLink => pageLink.pageId !== currentPageId).map(pageLink =>
@@ -88,7 +86,7 @@ export function LanguageOverview() {
         </Languages>
         <Actions>
             <Button onClick={openModal} appearance="subtle"
-                    iconBefore={<EditorSettingsIcon label="edit"/>}>Configure</Button>
+                    iconBefore={<EditorSettingsIcon label="edit"/>}><Trans>Configure</Trans></Button>
         </Actions>
     </>;
 
@@ -96,11 +94,11 @@ export function LanguageOverview() {
 
 
 const EmptyState = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-
+  
+  & button {
+    width: 100%;
+  }
+   
   & h1 {
     width: 100%;
     text-align: left;
@@ -118,26 +116,19 @@ const EmptyState = styled.div`
     background-position: center;
     background-repeat: no-repeat;
   }
-
-  & span {
-    margin-top: 1rem;
-    text-align: center;
-  }
 `
 const Actions = styled.div`
   position: absolute;
   bottom: 0;
   right: 0;
 `
+const DescriptionText = styled.div`
+    padding-bottom: 1.5rem;
+    text-align: center;
+`
 
 const Languages = styled.div`
   padding-bottom: 1.5rem;
-`
-
-const Headline = styled.h1`
-  font-size: 12px;
-  text-transform: uppercase;
-  padding-bottom: 1rem;
 `
 
 interface LanguageButtonProps {
@@ -150,11 +141,11 @@ interface LanguageButtonProps {
 
 function LanguageButton(
     {
-        language, url, isDisabled, postFix, base
+        language, url, isDisabled, postFix
     }
         : LanguageButtonProps) {
-    return <ButtonWrapper onClick={e => e.preventDefault()} href={base && (base.replace("/wiki", "") + url)}>
-            <LoadingButton shouldFitContainer onClick={() => url && router.navigate(url)}
+    return <ButtonWrapper onClick={e => e.preventDefault()} href={url}>
+            <LoadingButton shouldFitContainer onClick={() => url && router.navigate("/wiki" + url)}
                            isDisabled={isDisabled}>
                 {VALID_LANGUAGES[language]}{postFix}
             </LoadingButton>
@@ -177,10 +168,10 @@ const OverviewLoader = (props: IContentLoaderProps) => (
         foregroundColor="#ecebeb"
         {...props}
     >
-        <rect x="1" y="32" rx="3" ry="3" width="288" height="32"/>
-        <rect x="180" y="159" rx="0" ry="0" width="109" height="31"/>
-        <rect x="1" y="72" rx="3" ry="3" width="288" height="32"/>
-        <rect x="1" y="113" rx="3" ry="3" width="288" height="32"/>
-        <rect x="1" y="1" rx="3" ry="3" width="273" height="12"/>
+        <rect x="0" y="0" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="40" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="80" rx="3" ry="3" width="288" height="32"/>
+        <rect x="0" y="120" rx="3" ry="3" width="288" height="32"/>
+        <rect x="180" y="160" rx="3" ry="3" width="109" height="32"/>
     </ContentLoader>
 )

@@ -27,7 +27,7 @@ resolver.define("getLinks", async (req) => {
         if (!searchResult) {
             return link;
         }
-        const searchResultUrl = searchResults._links.context + searchResult.url;
+        const searchResultUrl = searchResult.url;
         return {...link, url: searchResultUrl, base: searchResults._links.base};
     });
 });
