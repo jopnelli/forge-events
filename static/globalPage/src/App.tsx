@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { useAsyncFn } from "react-use";
 import { createEvent } from "shared/api";
 import LoadingButton from "@atlaskit/button/loading-button";
