@@ -1,0 +1,35 @@
+steps:
+  # build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/event-service', '.']
+  # push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/event-service']
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'event-service'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/event-service'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--update-secrets=DATABASE_TOKENS=forge-database-tokens:latest'
+  # Ensure 100% traffic migration
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - 'update-traffic'
+      - 'event-service'
+      - '--to-latest'
+images:
+  - 'gcr.io/$PROJECT_ID/event-service'

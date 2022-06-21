@@ -6,13 +6,12 @@
   "private": true,
   "devDependencies": {
     "@alexlafroscia/yaml-merge": "^4.1.0",
-    "@forge/cli": "^2.0.5",
+    "@forge/cli": "^4.4.1",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.15",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
-    "babel-jest": "^27.4.0",
     "eslint": "^8.5.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.25.3",
@@ -53,7 +52,7 @@
     "lint": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx ",
     "lint:fix": "DEBUG=eslint:cli-engine eslint ./static/shared ./static/**/src ./remote/run/**/src --ext .ts,.tsx --fix",
     "forge:tunnel": "node tunnel-check.js; FORGE_USER_VAR_DATABASE_TOKEN=localdev:x forge tunnel",
-    "postinstall": "(cd static && npm install); (cd static/contentBylineItem && npm install); (cd static/modal && npm install); (cd remote/run/language && npm install);",
-    "remove-all-node-modules": "(rm -rf ./node_modules); (cd static && rm -rf ./node_modules); (cd static/contentBylineItem && rm -rf ./node_modules);  (cd static/modal && rm -rf ./node_modules); (cd remote/run && rm -rf ./node_modules);"
+    "postinstall": "(cd static && npm install); (cd static/globalPage && npm install); (cd remote/run/events-app && npm install);",
+    "remove-all-node-modules": "(rm -rf ./node_modules); (cd static && rm -rf ./node_modules); (cd static/globalPage && rm -rf ./node_modules); (cd remote/run && rm -rf ./node_modules);"
   }
 }

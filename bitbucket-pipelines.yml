@@ -3,8 +3,8 @@ image: andreysenov/firebase-tools
 definitions:
   # prevents node_modules downloads for every build
   caches:
-      node: node_modules
-      node2: static/node_modules
+    node: node_modules
+    node2: static/node_modules
   steps:
     - step: &app-install
         name: Install
@@ -18,7 +18,7 @@ definitions:
           - node_modules/**
           - static/node_modules/**
           - static/**/node_modules/**
-          - remote/run/language/node_modules/**
+          - remote/uage/node_modules/**
           - manifest.yml
     - parallel: &app-build
         - step:

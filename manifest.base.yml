@@ -1,28 +1,19 @@
 modules:
-  confluence:contentBylineItem:
-    - key: a-new-forge-app-content-byline-item
-      resource: cbi-res
+  confluence:globalPage:
+    - key: confluence-events-with-backend
+      resource: events-res
+      title: Events
+      route: events
       resolver:
         function: resolver
-      title: Languages
-      tooltip: Show different languages for this content
-      description: Show different languages for this content
-      dynamicProperties:
-        function: bylineproperties
   function:
     - key: resolver
       handler: index.handler
-    - key: bylineproperties
-      handler: index.bylineproperties
 resources:
-  - key: cbi-res
-    path: static/contentBylineItem/build
+  - key: events-res
+    path: static/globalPage/build
     tunnel:
       port: 3001
-  - key: modal-res
-    path: static/modal/build
-    tunnel:
-      port: 3002
 permissions:
   scopes:
     - storage:app

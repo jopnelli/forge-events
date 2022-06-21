@@ -1,0 +1,13 @@
+permissions:
+  external:
+    fetch:
+      backend:
+        - "https://event-service-3623rbt5pq-ew.a.run.app"
+        - "*.loophole.site"
+  content:
+    scripts:
+      - unsafe-inline
+    styles:
+      - unsafe-inline
+app:
+  id: ari:cloud:ecosystem::app/461688a4-bd29-4396-b8dc-ef041cd9cb87
